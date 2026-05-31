@@ -1,6 +1,5 @@
 package com.luisdbb.tarea3AD2024base.modelo;
 
-import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,20 +22,18 @@ public class User {
 	@Column(name = "id", updatable = false, nullable = false)
 	private long id;
 
-	private String firstName;
+	private String nombre;
 
-	private String lastName;
+	private String nacionalidad;
 
-	private LocalDate dob;
 
-	private String gender;
-
-	private String role;
+	private String tipoPersona;
 
 	@Column(unique=true)
 	private String email;
 
 	private String password;
+	
 
 	public long getId() {
 		return id;
@@ -46,44 +43,28 @@ public class User {
 		this.id = id;
 	}
 
-	public String getFirstName() {
-		return firstName;
+	public String getNombre() {
+		return nombre;
 	}
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
 	}
 
-	public String getLastName() {
-		return lastName;
+	public String getNacionalidad() {
+		return nacionalidad;
 	}
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
+	public void setNacionalidad(String nacionalidad) {
+		this.nacionalidad = nacionalidad;
 	}
 
-	public LocalDate getDob() {
-		return dob;
+	public String getTipoPersona() {
+		return tipoPersona;
 	}
 
-	public void setDob(LocalDate dob) {
-		this.dob = dob;
-	}
-
-	public String getGender() {
-		return gender;
-	}
-
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
-
-	public String getRole() {
-		return role;
-	}
-
-	public void setRole(String role) {
-		this.role = role;
+	public void setTipoPersona(String tipoPersona) {
+		this.tipoPersona = tipoPersona;
 	}
 
 	public String getEmail() {
@@ -104,8 +85,13 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", dob=" + dob + ", email="
-				+ email + "]";
+		return "User [id=" + id + ", nombre=" + nombre + ", nacionalidad=" + nacionalidad + ", tipoPersona="
+				+ tipoPersona + ", email=" + email + ", password=" + password + ", getId()=" + getId()
+				+ ", getNombre()=" + getNombre() + ", getNacionalidad()=" + getNacionalidad() + ", getTipoPersona()="
+				+ getTipoPersona() + ", getEmail()=" + getEmail() + ", getPassword()=" + getPassword() + ", getClass()="
+				+ getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
 	}
+
+	
 
 }

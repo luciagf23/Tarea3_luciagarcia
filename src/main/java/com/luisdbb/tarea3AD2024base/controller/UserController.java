@@ -30,17 +30,14 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -61,28 +58,16 @@ public class UserController implements Initializable {
 	private Label userId;
 
 	@FXML
-	private TextField firstName;
-
-	@FXML
-	private TextField lastName;
-
-	@FXML
-	private DatePicker dob;
-
-	@FXML
-	private RadioButton rbMale;
-
-	@FXML
-	private ToggleGroup gender;
-
-	@FXML
-	private RadioButton rbFemale;
-
-	@FXML
-	private ComboBox<String> cbRole;
+	private TextField nombre;
 
 	@FXML
 	private TextField email;
+
+	@FXML
+	private TextField nacionalidad;
+
+	@FXML
+	private ComboBox<String> tipoPersona;
 
 	@FXML
 	private PasswordField password;
@@ -131,7 +116,7 @@ public class UserController implements Initializable {
 	private UserService userService;
 
 	private ObservableList<User> userList = FXCollections.observableArrayList();
-	private ObservableList<String> roles = FXCollections.observableArrayList("Admin", "User");
+	private ObservableList<String> roles = FXCollections.observableArrayList("Artista", "Coordinacion");
 
 	@FXML
 	private void exit(ActionEvent event) {
@@ -154,22 +139,20 @@ public class UserController implements Initializable {
 	@FXML
 	private void saveUser(ActionEvent event) {
 
-		if (validate("First Name", getFirstName(), "[a-zA-Z]+") && validate("Last Name", getLastName(), "[a-zA-Z]+")
-				&& emptyValidation("DOB", dob.getEditor().getText().isEmpty())
-				&& emptyValidation("Role", getRole() == null)) {
+		if (!nombre.getText().isEmpty() && !email.getText().isEmpty() && !nacionalidad.getText().isEmpty()
+				&& tipoPersona.getValue() != null) {
 
 			if (userId.getText() == null || userId.getText() == "") {
 				if (validate("Email", getEmail(), "[a-zA-Z0-9][a-zA-Z0-9._]*@[a-zA-Z0-9]+([.][a-zA-Z]+)+")
 						&& emptyValidation("Password", getPassword().isEmpty())) {
 
 					User user = new User();
-					user.setFirstName(getFirstName());
-					user.setLastName(getLastName());
-					user.setDob(getDob());
-					user.setGender(getGender());
-					user.setRole(getRole());
-					user.setEmail(getEmail());
-					user.setPassword(getPassword());
+
+					user.setNombre(nombre.getText());
+					user.setNacionalidad(nacionalidad.getText());
+					user.setTipoPersona(tipoPersona.getValue());
+					user.setEmail(email.getText());
+					user.setPassword(password.getText());
 
 					User newUser = userService.save(user);
 
@@ -178,13 +161,10 @@ public class UserController implements Initializable {
 
 			} else {
 				User user = userService.find(Long.parseLong(userId.getText()));
-				user.setFirstName(getFirstName());
-				user.setLastName(getLastName());
-				user.setDob(getDob());
-				user.setGender(getGender());
-				user.setRole(getRole());
+
+				user.setEmail(getEmail());
+
 				User updatedUser = userService.update(user);
-				updateAlert(updatedUser);
 			}
 
 			clearFields();
@@ -211,57 +191,49 @@ public class UserController implements Initializable {
 
 	private void clearFields() {
 		userId.setText(null);
-		firstName.clear();
-		lastName.clear();
-		dob.getEditor().clear();
-		rbMale.setSelected(true);
-		rbFemale.setSelected(false);
-		cbRole.getSelectionModel().clearSelection();
+		nombre.clear();
 		email.clear();
+		nacionalidad.clear();
 		password.clear();
+		tipoPersona.getSelectionModel().clearSelection();
 	}
 
 	private void saveAlert(User user) {
 
 		Alert alert = new Alert(AlertType.INFORMATION);
-		alert.setTitle("User saved successfully.");
+		alert.setTitle("Guardado");
 		alert.setHeaderText(null);
-		alert.setContentText("The user " + user.getFirstName() + " " + user.getLastName() + " has been created and \n"
-				+ getGenderTitle(user.getGender()) + " id is " + user.getId() + ".");
+		alert.setContentText("Registro guardado correctamente.");
 		alert.showAndWait();
 	}
 
 	private void updateAlert(User user) {
 
 		Alert alert = new Alert(AlertType.INFORMATION);
-		alert.setTitle("User updated successfully.");
+		alert.setTitle("Actualizado");
 		alert.setHeaderText(null);
-		alert.setContentText("The user " + user.getFirstName() + " " + user.getLastName() + " has been updated.");
+		alert.setContentText("Registro actualizado correctamente.");
 		alert.showAndWait();
 	}
 
-	private String getGenderTitle(String gender) {
-		return (gender.equals("Male")) ? "his" : "her";
+	public String getNombre() {
+		return nombre.getText();
 	}
 
-	public String getFirstName() {
-		return firstName.getText();
+	public void setNombre(TextField nombre) {
+		this.nombre = nombre;
 	}
 
-	public String getLastName() {
-		return lastName.getText();
+	public TextField getNacionalidad() {
+		return nacionalidad;
 	}
 
-	public LocalDate getDob() {
-		return dob.getValue();
+	public void setNacionalidad(TextField nacionalidad) {
+		this.nacionalidad = nacionalidad;
 	}
 
-	public String getGender() {
-		return rbMale.isSelected() ? "Male" : "Female";
-	}
-
-	public String getRole() {
-		return cbRole.getSelectionModel().getSelectedItem();
+	public void setEmail(TextField email) {
+		this.email = email;
 	}
 
 	public String getEmail() {
@@ -275,7 +247,7 @@ public class UserController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-		cbRole.setItems(roles);
+		tipoPersona.setItems(roles);
 
 		userTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
@@ -348,14 +320,7 @@ public class UserController implements Initializable {
 
 				private void updateUser(User user) {
 					userId.setText(Long.toString(user.getId()));
-					firstName.setText(user.getFirstName());
-					lastName.setText(user.getLastName());
-					dob.setValue(user.getDob());
-					if (user.getGender().equals("Male"))
-						rbMale.setSelected(true);
-					else
-						rbFemale.setSelected(true);
-					cbRole.getSelectionModel().select(user.getRole());
+					email.setText(user.getEmail());
 				}
 			};
 			return cell;
