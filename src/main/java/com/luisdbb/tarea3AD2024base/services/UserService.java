@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.luisdbb.tarea3AD2024base.modelo.Credencial;
 import com.luisdbb.tarea3AD2024base.modelo.User;
 import com.luisdbb.tarea3AD2024base.repositorios.UserRepository;
 
@@ -14,6 +15,9 @@ public class UserService {
 
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private CredencialService credencialService;
 
 	public User save(User entity) {
 		return userRepository.save(entity);
@@ -40,15 +44,17 @@ public class UserService {
 	}
 
 	public boolean authenticate(String username, String password) {
-		User user = this.findByEmail(username);
-		if (user == null) {
-			return false;
-		} else {
-			if (password.equals(user.getPassword()))
-				return true;
-			else
-				return false;
-		}
+	    // Admin hardcodeado según especificaciones
+	    if (username.equals("admin") && password.equals("admin")) {
+	        return true;
+	    }
+	    
+	    // Para coordinación y artistas buscar en credenciales
+	    Credencial credencial = credencialService.findByUsername(username);
+	    if (credencial == null) {
+	        return false;
+	    }
+	    return password.equals(credencial.getPassword());
 	}
 
 	public User findByEmail(String email) {

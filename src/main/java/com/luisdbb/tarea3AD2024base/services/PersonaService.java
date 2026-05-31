@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.luisdbb.tarea3AD2024base.modelo.Persona;
+import com.luisdbb.tarea3AD2024base.modelo.User;
 import com.luisdbb.tarea3AD2024base.repositorios.PersonaRepository;
 
 @Service
@@ -33,5 +34,13 @@ public class PersonaService {
 
 	public void eliminar(Long id) {
 		personaRepository.deleteById(id);
+	}
+
+	public List<Persona> findAll() {
+		return personaRepository.findAll();
+	}
+
+	public void deleteInBatch(List<Persona> personas) {
+		personaRepository.deleteAll(personas);
 	}
 }

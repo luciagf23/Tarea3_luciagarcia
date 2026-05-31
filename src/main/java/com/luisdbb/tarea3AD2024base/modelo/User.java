@@ -27,11 +27,12 @@ public class User {
 	private String nacionalidad;
 
 
-	private String tipoPersona;
-
+	private String perfil;
+	
 	@Column(unique=true)
 	private String email;
-
+	
+	
 	private String password;
 	
 
@@ -59,12 +60,13 @@ public class User {
 		this.nacionalidad = nacionalidad;
 	}
 
-	public String getTipoPersona() {
-		return tipoPersona;
+
+	public String getPerfil() {
+		return perfil;
 	}
 
-	public void setTipoPersona(String tipoPersona) {
-		this.tipoPersona = tipoPersona;
+	public void setPerfil(String perfil) {
+		this.perfil = perfil;
 	}
 
 	public String getEmail() {
@@ -85,12 +87,14 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", nombre=" + nombre + ", nacionalidad=" + nacionalidad + ", tipoPersona="
-				+ tipoPersona + ", email=" + email + ", password=" + password + ", getId()=" + getId()
-				+ ", getNombre()=" + getNombre() + ", getNacionalidad()=" + getNacionalidad() + ", getTipoPersona()="
-				+ getTipoPersona() + ", getEmail()=" + getEmail() + ", getPassword()=" + getPassword() + ", getClass()="
-				+ getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
+		return "User [id=" + id + ", nombre=" + nombre + ", nacionalidad=" + nacionalidad + ", perfil=" + perfil
+				+ ", email=" + email + ", password=" + password + ", getId()=" + getId() + ", getNombre()="
+				+ getNombre() + ", getNacionalidad()=" + getNacionalidad() + ", getPerfil()=" + getPerfil()
+				+ ", getEmail()=" + getEmail() + ", getPassword()=" + getPassword() + ", getClass()=" + getClass()
+				+ ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
 	}
+
+	
 
 	
 

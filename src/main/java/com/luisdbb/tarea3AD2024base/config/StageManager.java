@@ -65,7 +65,8 @@ public class StageManager {
      *
      * @return Parent root node of the FXML document hierarchy
      */
-    private Parent loadViewNodeHierarchy(String fxmlFilePath) {
+   
+    /*private Parent loadViewNodeHierarchy(String fxmlFilePath) {
         Parent rootNode = null;
         try {
             rootNode = springFXMLLoader.load(fxmlFilePath);
@@ -75,7 +76,19 @@ public class StageManager {
         }
         return rootNode;
     }
+    */
     
+    private Parent loadViewNodeHierarchy(String fxmlFilePath) {
+        Parent rootNode = null;
+        try {
+            rootNode = springFXMLLoader.load(fxmlFilePath);
+            Objects.requireNonNull(rootNode, "A Root FXML node must not be null");
+        } catch (Exception exception) {
+            exception.printStackTrace(); // ← añade esto
+            logAndExit("Unable to load FXML view" + fxmlFilePath, exception);
+        }
+        return rootNode;
+    }
     
     private void logAndExit(String errorMsg, Exception exception) {
         LOG.error(errorMsg, exception, exception.getCause());

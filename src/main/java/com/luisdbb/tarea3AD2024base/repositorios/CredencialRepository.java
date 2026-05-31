@@ -15,4 +15,6 @@ public interface CredencialRepository
     Optional<Credencial> findByUsername(String username);
 
     boolean existsByUsername(String username);
+    
+    
 }
