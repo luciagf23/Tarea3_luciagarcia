@@ -16,6 +16,8 @@ public class PersonaService {
 	private PersonaRepository personaRepository;
 
 	public Persona guardar(Persona persona) {
+		
+		persona.setEmail(persona.getEmail().toLowerCase());
 
 		if (personaRepository.existsByEmail(persona.getEmail())) {
 			throw new RuntimeException("Email ya registrado");
@@ -43,4 +45,14 @@ public class PersonaService {
 	public void deleteInBatch(List<Persona> personas) {
 		personaRepository.deleteAll(personas);
 	}
+	
+	private void validarDatosPersona(Persona p) {
+	    if (p.getNombre() == null || p.getNombre().isBlank() ||
+	        p.getEmail() == null || p.getEmail().isBlank() ||
+	        p.getNacionalidad() == null || p.getNacionalidad().isBlank()) {
+
+	        throw new RuntimeException("Faltan datos personales obligatorios");
+	    }
+	}
+
 }

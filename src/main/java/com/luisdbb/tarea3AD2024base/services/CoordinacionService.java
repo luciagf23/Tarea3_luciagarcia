@@ -21,4 +21,11 @@ public class CoordinacionService {
     public List<Coordinacion> listarTodos() {
         return coordinacionRepository.findAll();
     }
+    
+    private void validarCoordinacion(Coordinacion c) {
+        if (c.isSenior() && c.getFechaSenior() == null) {
+            throw new RuntimeException("Debe indicar la fecha desde que es senior");
+        }
+    }
+
 }

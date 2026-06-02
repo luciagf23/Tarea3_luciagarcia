@@ -2,8 +2,6 @@ package com.luisdbb.tarea3AD2024base.controller;
 
 import java.io.IOException;
 import java.net.URL;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +23,7 @@ import com.luisdbb.tarea3AD2024base.modelo.Rol;
 import com.luisdbb.tarea3AD2024base.modelo.Persona;
 import com.luisdbb.tarea3AD2024base.services.CredencialService;
 import com.luisdbb.tarea3AD2024base.services.PersonaService;
+import com.luisdbb.tarea3AD2024base.services.RegistroService;
 import com.luisdbb.tarea3AD2024base.view.FxmlView;
 
 import javafx.application.Platform;
@@ -41,7 +40,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.SelectionMode;
@@ -54,6 +52,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
+import javafx.beans.property.SimpleStringProperty;
 
 /**
  * @author Ram Alapure
@@ -71,6 +70,9 @@ public class UserController implements Initializable {
 
 	@FXML
 	private TextField email;
+	
+	@FXML
+	private TextField username;
 
 	@FXML
 	private TextField nacionalidad;
@@ -108,7 +110,9 @@ public class UserController implements Initializable {
 	@FXML
 	private TableView<Persona> userTable;
 
-
+	@FXML
+	private TableColumn<Persona, Long> colUserId;
+	
 	@FXML
 	private TableColumn<Persona, String> colName;
 
@@ -118,6 +122,9 @@ public class UserController implements Initializable {
 
 	@FXML
 	private TableColumn<Persona, String> colEmail;
+	
+	@FXML
+	private TableColumn<Persona, String> colTipoPersona;
 
 	@FXML
 	private TableColumn<Persona, Boolean> colEdit;
@@ -131,6 +138,10 @@ public class UserController implements Initializable {
 
 	@Autowired
 	private PersonaService personaService;
+	
+	@Autowired
+	private RegistroService registroService;
+
 
 	@Autowired
 	private CredencialService credencialService;
@@ -152,7 +163,7 @@ public class UserController implements Initializable {
 	}
 
 	@FXML
-	void reset(ActionEvent event) {
+	void limpiar(ActionEvent event) {
 		clearFields();
 	}
 
@@ -179,9 +190,10 @@ public class UserController implements Initializable {
 	            if (chkMagia.isSelected()) especialidades.add(Especialidad.MAGIA);
 	            if (chkEquilibrismo.isSelected()) especialidades.add(Especialidad.EQUILIBRISMO);
 	            if (chkMalabarismo.isSelected()) especialidades.add(Especialidad.MALABARISMO);
+	            
 	            artista.setEspecialidades(especialidades);
 	            
-	            persona = personaService.guardar(artista);
+	            persona = artista;
 
 	        } else {
 	            Coordinacion coord = new Coordinacion();
@@ -194,15 +206,16 @@ public class UserController implements Initializable {
 	                coord.setFechaSenior(fechaSenior.getValue());
 	            }
 	            
-	            persona = personaService.guardar(coord);
+	            persona = coord;
 	        }
 
 	        Credencial credencial = new Credencial();
-	        credencial.setUsername(email.getText());
+	        credencial.setUsername(username.getText());
 	        credencial.setPassword(password.getText());
 	        credencial.setRol(tipoPersona.getValue().equals("Artista") ? Rol.ARTISTA : Rol.COORDINACION);
 	        credencial.setPersona(persona);
-	        credencialService.guardar(credencial);
+	        
+	        registroService.registrarPersona(persona, credencial);
 
 	        loadUserDetails();
 	        clearFields();
@@ -355,10 +368,24 @@ public class UserController implements Initializable {
 		 * !string.isEmpty()) { return LocalDate.parse(string, dateFormatter); } else {
 		 * return null; } } }));
 		 */
-
+		
+		colUserId.setCellValueFactory(new PropertyValueFactory<>("id"));
 		colName.setCellValueFactory(new PropertyValueFactory<>("nombre"));
 		colNacion.setCellValueFactory(new PropertyValueFactory<>("nacionalidad"));
 		colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
+		colTipoPersona.setCellValueFactory(cellData -> {
+
+		    Persona p = cellData.getValue();
+
+		    if (p instanceof Artista) {
+		        return new SimpleStringProperty("Artista");
+		    } else if (p instanceof Coordinacion) {
+		        return new SimpleStringProperty("Coordinación");
+		    }
+
+		    return new SimpleStringProperty("Desconocido");
+		});
+		
 		colEdit.setCellFactory(cellFactory);
 	}
 
