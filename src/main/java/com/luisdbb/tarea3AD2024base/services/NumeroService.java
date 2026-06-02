@@ -21,4 +21,11 @@ public class NumeroService {
     public List<Numero> listarTodos() {
         return numeroRepository.findAll();
     }
+    
+    public List<Numero> findByEspectaculo(Long espectaculoId) {
+        return numeroRepository.findByEspectaculoIdOrderByOrden(espectaculoId);
+    }
+    public void eliminar(Long id) {
+        numeroRepository.deleteById(id);
+    }
 }

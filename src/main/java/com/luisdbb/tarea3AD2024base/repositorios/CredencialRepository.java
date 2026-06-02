@@ -16,5 +16,5 @@ public interface CredencialRepository
 
     boolean existsByUsername(String username);
     
-    
+    Optional<Credencial> findByPersonaId(Long id);
 }

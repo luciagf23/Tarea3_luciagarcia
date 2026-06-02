@@ -12,7 +12,7 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.OneToOne;
 
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "dtype")
 public abstract class Persona {
 

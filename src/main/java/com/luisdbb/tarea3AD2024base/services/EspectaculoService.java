@@ -24,11 +24,10 @@ public class EspectaculoService {
 
 		return espectaculoRepository.save(espectaculo);
 	}
-	
-	public void eliminar(Long id) {
-	    espectaculoRepository.deleteById(id);
-	}
 
+	public void eliminar(Long id) {
+		espectaculoRepository.deleteById(id);
+	}
 
 	// Validaciones
 	private void validarNombreUnico(Espectaculo e) {
@@ -60,13 +59,12 @@ public class EspectaculoService {
 			throw new RuntimeException("El espectáculo no puede durar más de 1 año");
 		}
 	}
+
 	private void validarCoordinador(Espectaculo e) {
 		if (e.getCoordinador() == null) {
 			throw new RuntimeException("Debe asignarse un coordinador");
 		}
 	}
-
-	
 
 	public List<Espectaculo> listarTodos() {
 		return espectaculoRepository.findAll();
@@ -74,5 +72,9 @@ public class EspectaculoService {
 
 	public Espectaculo buscarPorId(Long id) {
 		return espectaculoRepository.findById(id).orElse(null);
+	}
+
+	public boolean existsByNombre(String nombre) {
+		return espectaculoRepository.existsByNombre(nombre);
 	}
 }

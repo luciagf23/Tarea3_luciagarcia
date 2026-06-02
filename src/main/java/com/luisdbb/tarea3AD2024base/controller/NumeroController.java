@@ -1,0 +1,193 @@
+package com.luisdbb.tarea3AD2024base.controller;
+
+import java.net.URL;
+import java.util.ResourceBundle;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Controller;
+
+import com.luisdbb.tarea3AD2024base.config.StageManager;
+import com.luisdbb.tarea3AD2024base.modelo.Espectaculo;
+import com.luisdbb.tarea3AD2024base.modelo.Numero;
+import com.luisdbb.tarea3AD2024base.services.NumeroService;
+import com.luisdbb.tarea3AD2024base.services.SesionService;
+import com.luisdbb.tarea3AD2024base.view.FxmlView;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+
+@Controller
+public class NumeroController implements Initializable {
+
+	@FXML
+	private Label lblEspectaculo;
+	@FXML
+	private TableView<Numero> tablaNumeros;
+	@FXML
+	private TableColumn<Numero, Integer> colOrden;
+	@FXML
+	private TableColumn<Numero, String> colNombre;
+	@FXML
+	private TableColumn<Numero, Double> colDuracion;
+	@FXML
+	private TextField txtOrden;
+	@FXML
+	private TextField txtNombre;
+	@FXML
+	private TextField txtDuracion;
+	@FXML
+	private Button btnGuardar;
+	@FXML
+	private Button btnNuevo;
+	@FXML
+	private Button btnEliminar;
+	@FXML
+	private Button btnVolver;
+
+	@Autowired
+	private NumeroService numeroService;
+
+	@Autowired
+	private SesionService sesionService;
+
+	
+	private StageManager stageManager;
+
+	private Espectaculo espectaculoActual;
+	private Numero numeroEditando = null;
+	private ObservableList<Numero> listaNumeros = FXCollections.observableArrayList();
+
+	public void setStageManager(StageManager stageManager) {
+	    this.stageManager = stageManager;
+	} 
+	
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		espectaculoActual = sesionService.getEspectaculoActual();
+
+		lblEspectaculo.setText("Espectáculo: " + espectaculoActual.getNombre());
+
+		colOrden.setCellValueFactory(new PropertyValueFactory<>("orden"));
+		colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+		colDuracion.setCellValueFactory(new PropertyValueFactory<>("duracion"));
+
+		cargarNumeros();
+
+		tablaNumeros.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+			if (newVal != null)
+				cargarNumeroEnFormulario(newVal);
+		});
+	}
+
+	private void cargarNumeros() {
+		listaNumeros.clear();
+		listaNumeros.addAll(numeroService.findByEspectaculo(espectaculoActual.getId()));
+		tablaNumeros.setItems(listaNumeros);
+	}
+
+	private void cargarNumeroEnFormulario(Numero n) {
+		numeroEditando = n;
+		txtOrden.setText(String.valueOf(n.getOrden()));
+		txtNombre.setText(n.getNombre());
+		txtDuracion.setText(String.valueOf(n.getDuracion()));
+	}
+
+	@FXML
+	private void guardarNumero(ActionEvent event) {
+		try {
+			validar();
+			Numero n = numeroEditando != null ? numeroEditando : new Numero();
+			n.setNombre(txtNombre.getText().trim());
+			n.setOrden(Integer.parseInt(txtOrden.getText().trim()));
+
+			// Validar duración formato x,y donde y es 0 o 5
+			double duracion = parseDuracion(txtDuracion.getText().trim());
+			n.setDuracion(duracion);
+			n.setEspectaculo(espectaculoActual);
+
+			numeroService.guardar(n);
+			limpiar();
+			cargarNumeros();
+			mostrarInfo("Número guardado correctamente");
+
+		} catch (Exception e) {
+			mostrarError(e.getMessage());
+		}
+	}
+
+	@FXML
+	private void nuevoNumero(ActionEvent event) {
+		limpiar();
+	}
+
+	@FXML
+	private void eliminarNumero(ActionEvent event) {
+		if (numeroEditando == null) {
+			mostrarError("Selecciona un número primero");
+			return;
+		}
+		numeroService.eliminar(numeroEditando.getId());
+		limpiar();
+		cargarNumeros();
+	}
+
+	@FXML
+	private void volver(ActionEvent event) {
+		stageManager.switchScene(FxmlView.ESPECTACULOS);
+	}
+
+	private double parseDuracion(String texto) {
+		// Acepta tanto punto como coma decimal
+		texto = texto.replace(",", ".");
+		double valor = Double.parseDouble(texto);
+		// Obtener la parte decimal
+		double decimal = valor - Math.floor(valor);
+		// Solo permite ,0 o ,5
+		if (Math.abs(decimal - 0.0) > 0.001 && Math.abs(decimal - 0.5) > 0.001) {
+			throw new RuntimeException("La duración debe ser en formato x,0 o x,5 (ej: 3,0 o 2,5)");
+		}
+		return valor;
+	}
+
+	private void validar() {
+		if (txtNombre.getText().isBlank() || txtOrden.getText().isBlank() || txtDuracion.getText().isBlank()) {
+			throw new RuntimeException("Todos los campos son obligatorios");
+		}
+		try {
+			Integer.parseInt(txtOrden.getText().trim());
+		} catch (NumberFormatException e) {
+			throw new RuntimeException("El orden debe ser un número entero");
+		}
+	}
+
+	private void limpiar() {
+		numeroEditando = null;
+		txtNombre.clear();
+		txtOrden.clear();
+		txtDuracion.clear();
+		tablaNumeros.getSelectionModel().clearSelection();
+	}
+
+	private void mostrarError(String msg) {
+		Alert alert = new Alert(Alert.AlertType.ERROR);
+		alert.setContentText(msg);
+		alert.showAndWait();
+	}
+
+	private void mostrarInfo(String msg) {
+		Alert alert = new Alert(Alert.AlertType.INFORMATION);
+		alert.setContentText(msg);
+		alert.showAndWait();
+	}
+}

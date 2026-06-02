@@ -34,7 +34,7 @@ public enum FxmlView {
 
         @Override
         public String getFxmlFile() {
-            return "/fxml/espectaculos.fxml";
+            return "/fxml/espectaculo.fxml";
         }
     },
 
@@ -48,9 +48,20 @@ public enum FxmlView {
         public String getFxmlFile() {
             return "/fxml/detalle_espectaculo.fxml";
         }
-    };
+    },
+    
+    NUMEROS {
+        @Override
+        public String getTitle() {
+            return getStringFromResourceBundle("numeros.title");
+        }
 
-   
+        @Override
+        public String getFxmlFile() {
+            return "/fxml/numero.fxml";
+        }
+    };
+	
 
 	public abstract String getTitle();
 

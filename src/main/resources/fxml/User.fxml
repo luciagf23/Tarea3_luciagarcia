@@ -215,23 +215,24 @@
 				<TableView fx:id="userTable" prefHeight="300.0"
 					prefWidth="679.0" tableMenuButtonVisible="true">
 					<columns>
-						<TableColumn fx:id="colUserId" prefWidth="60.0"
+						<TableColumn fx:id="colUserId" prefWidth="50.0"
 							text="ID" />
-						<TableColumn fx:id="colName" maxWidth="4000.0"
-							prefWidth="180.0" text="Nombre" />
-						<TableColumn fx:id="colNacion" maxWidth="4000.0"
-							prefWidth="180.0" text="Nacionalidad" />
-						<TableColumn fx:id="colEmail" maxWidth="6000.0"
-							prefWidth="250.0" text="Email" />
-						<TableColumn fx:id="colTipoPersona" prefWidth="140.0"
+						<TableColumn fx:id="colName" 
+							prefWidth="110.0" text="Nombre" />
+						<TableColumn fx:id="colNacion" 
+							prefWidth="110.0" text="Nacionalidad" />
+						<TableColumn fx:id="colEmail" 
+							prefWidth="110.0" text="Email" />
+						<TableColumn fx:id="colTipoPersona" prefWidth="120.0"
 							text="Tipo" />
 						<TableColumn fx:id="colEdit" maxWidth="3500.0"
-							prefWidth="80.0" text="Edit" />
+							prefWidth="40.0" text="Edit" />
 					</columns>
 
 					<columnResizePolicy>
 						<TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
 					</columnResizePolicy>
+					
 					<contextMenu>
 						<ContextMenu>
 							<items>

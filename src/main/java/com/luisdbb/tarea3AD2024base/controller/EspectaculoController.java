@@ -1,45 +1,54 @@
 package com.luisdbb.tarea3AD2024base.controller;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import com.luisdbb.tarea3AD2024base.config.StageManager;
 import com.luisdbb.tarea3AD2024base.modelo.Coordinacion;
 import com.luisdbb.tarea3AD2024base.modelo.Espectaculo;
 import com.luisdbb.tarea3AD2024base.services.EspectaculoService;
 import com.luisdbb.tarea3AD2024base.services.PersonaService;
+import com.luisdbb.tarea3AD2024base.services.SesionService;
+import com.luisdbb.tarea3AD2024base.view.FxmlView;
 
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 @Controller
-public class EspectaculoController implements Serializable {
+public class EspectaculoController implements Initializable {
 
 	@FXML
 	private TableView<Espectaculo> tablaEspectaculos;
 	@FXML
 	private TableColumn<Espectaculo, String> colNombre;
 	@FXML
-	private TableColumn<Espectaculo, String> colFechaInicio;
+	private TableColumn<Espectaculo, LocalDate> colFechaInicio;
 	@FXML
-	private TableColumn<Espectaculo, String> colFechaFin;
+	private TableColumn<Espectaculo, LocalDate> colFechaFin;
 	@FXML
 	private TableColumn<Espectaculo, String> colCoordinador;
 
@@ -59,25 +68,62 @@ public class EspectaculoController implements Serializable {
 	@FXML
 	private Button btnEliminar;
 
+	@FXML
+	private Button btnEditar;
+
+	@FXML
+	private Button btnNumeros;
+
 	@Autowired
 	private EspectaculoService espectaculoService;
 
 	@Autowired
 	private PersonaService personaService;
 
+	private StageManager stageManager;
+
 	private Espectaculo espectaculoEditando;
-	
-	
+
+	@Autowired
+	private SesionService sesionService;
+
 	public EspectaculoController() {
-	    
+
 	}
 
+	public void setStageManager(StageManager stageManager) {
+		this.stageManager = stageManager;
+	}
 
 	public void initialize(URL location, ResourceBundle resources) {
-		configurarTabla();
-		cargarCoordinadores();
-		cargarTablaEspectaculos();
 
+		configurarTabla();
+
+		cargarCoordinadores();
+
+		comboCoordinador.setCellFactory(new Callback<ListView<Coordinacion>, ListCell<Coordinacion>>() {
+
+			@Override
+			public ListCell<Coordinacion> call(ListView<Coordinacion> lv) {
+				return new ListCell<Coordinacion>() {
+					@Override
+					protected void updateItem(Coordinacion item, boolean empty) {
+						super.updateItem(item, empty);
+						setText(empty || item == null ? null : item.getNombre());
+					}
+				};
+			}
+		});
+
+		comboCoordinador.setButtonCell(new ListCell<Coordinacion>() {
+			@Override
+			protected void updateItem(Coordinacion item, boolean empty) {
+				super.updateItem(item, empty);
+				setText(empty || item == null ? null : item.getNombre());
+			}
+		});
+
+		cargarTablaEspectaculos();
 
 		tablaEspectaculos.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
 			if (newSel != null) {
@@ -96,15 +142,15 @@ public class EspectaculoController implements Serializable {
 	}
 
 	private void cargarCoordinadores() {
-	    List<Coordinacion> lista = personaService.listarCoordinadores();
-	    System.out.println("Coordinadores encontrados: " + lista.size());
-	    comboCoordinador.setItems(FXCollections.observableArrayList(lista));
-	    System.out.println("personaService es: " + personaService);
+		List<Coordinacion> lista = personaService.findAllCoordinadores();
+		System.out.println("Coordinadores encontrados: " + lista.size());
+		comboCoordinador.setItems(FXCollections.observableArrayList(lista));
+		System.out.println("personaService: " + personaService);
+		System.out.println("Coordinadores: " + lista.size());
 
-	    System.out.println(">>> cargarCoordinadores ejecutado");
+		System.out.println(">>> cargarCoordinadores ejecutado");
 
 	}
-
 
 	private void cargarTablaEspectaculos() {
 		tablaEspectaculos.setItems(FXCollections.observableArrayList(espectaculoService.listarTodos()));
@@ -125,6 +171,33 @@ public class EspectaculoController implements Serializable {
 				|| comboCoordinador.getValue() == null) {
 
 			throw new RuntimeException("Todos los campos son obligatorios");
+		}
+
+		// Nombre maximo 25 caracteres
+		if (txtNombre.getText().trim().length() > 25) {
+			throw new RuntimeException("El nombre no puede superar los 25 caracteres");
+		}
+
+		// Fecha fin posterior a fecha inicio
+		if (dateFin.getValue().isAfter(dateInicio.getValue().plusYears(1))) {
+			throw new RuntimeException("El periodo no puede ser superior a 1 año");
+		}
+
+		// Periodo no superior a 1 año
+		if (dateFin.getValue().isAfter(dateInicio.getValue().plusYears(1))) {
+			throw new RuntimeException("El periodo no puede ser superior a 1 año");
+		}
+
+		// Nombre único
+		if (espectaculoEditando == null) {
+			if (espectaculoService.existsByNombre(txtNombre.getText().trim())) {
+				throw new RuntimeException("Ya existe un espectáculo con ese nombre");
+			}
+		} else {
+			if (!espectaculoEditando.getNombre().equalsIgnoreCase(txtNombre.getText().trim())
+					&& espectaculoService.existsByNombre(txtNombre.getText().trim())) {
+				throw new RuntimeException("Ya existe un espectáculo con ese nombre");
+			}
 		}
 	}
 
@@ -185,34 +258,60 @@ public class EspectaculoController implements Serializable {
 		}
 
 	}
-	
+
 	@FXML
-	private void onVerDetalles(ActionEvent event) {
-	    Espectaculo seleccionado = tablaEspectaculos.getSelectionModel().getSelectedItem();
-
-	    if (seleccionado == null) {
-	        mostrarError("Seleccione un espectáculo");
-	        return;
-	    }
-
-	    try {
-	        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/detalle_espectaculo.fxml"));
-	        Parent root = loader.load();
-
-	        DetalleEspectaculoController controller = loader.getController();
-	        controller.setEspectaculo(seleccionado);
-
-	        Stage stage = new Stage();
-	        stage.setTitle("Detalle del espectáculo");
-	        stage.setScene(new Scene(root));
-	        stage.show();
-
-	    } catch (Exception e) {
-	    	e.printStackTrace();
-	        mostrarError(e.getMessage());
-	    }
+	private void editarEspectaculo(ActionEvent event) {
+		Espectaculo seleccionado = tablaEspectaculos.getSelectionModel().getSelectedItem();
+		if (seleccionado == null) {
+			mostrarError("Selecciona un espectáculo de la tabla");
+			return;
+		}
+		cargarEspectaculoEnFormulario(seleccionado);
 	}
 
+	@FXML
+	private void abrirNumeros(ActionEvent event) {
+		Espectaculo seleccionado = tablaEspectaculos.getSelectionModel().getSelectedItem();
+		if (seleccionado == null) {
+			mostrarError("Selecciona un espectáculo primero");
+			return;
+		}
+		sesionService.setEspectaculoActual(seleccionado);
+		stageManager.switchScene(FxmlView.NUMEROS);
+	}
+
+	@FXML
+	private void onVerDetalles(ActionEvent event) {
+		Espectaculo seleccionado = tablaEspectaculos.getSelectionModel().getSelectedItem();
+
+		if (seleccionado == null) {
+			mostrarError("Seleccione un espectáculo");
+			return;
+		}
+
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/detalle_espectaculo.fxml"));
+			Parent root = loader.load();
+
+			DetalleEspectaculoController controller = loader.getController();
+			controller.setEspectaculo(seleccionado);
+
+			Stage stage = new Stage();
+			stage.setTitle("Detalle del espectáculo");
+			stage.setScene(new Scene(root));
+			stage.show();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			mostrarError(e.getMessage());
+		}
+	}
+
+	@FXML
+	private void logout(ActionEvent event) throws IOException {
+		sesionService.cerrarSesion();
+		stageManager.switchScene(FxmlView.LOGIN);
+	}
 
 	private void mostrarInfo(String msg) {
 		Alert a = new Alert(Alert.AlertType.INFORMATION);

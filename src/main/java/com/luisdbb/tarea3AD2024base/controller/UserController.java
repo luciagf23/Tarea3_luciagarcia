@@ -111,6 +111,9 @@ public class UserController implements Initializable {
 
 	@FXML
 	private Button saveUser;
+	
+	@FXML
+	private Button gestionEspectaculos;
 
 	@FXML
 	private TableView<Persona> userTable;
@@ -136,8 +139,7 @@ public class UserController implements Initializable {
 	@FXML
 	private MenuItem deleteUsers;
 
-	@Lazy
-	@Autowired
+	
 	private StageManager stageManager;
 
 	@Autowired
@@ -158,6 +160,9 @@ public class UserController implements Initializable {
 	private ObservableList<Persona> userList = FXCollections.observableArrayList();
 	private ObservableList<String> roles = FXCollections.observableArrayList("Artista", "Coordinacion");
 
+	public void setStageManager(StageManager stageManager) {
+	    this.stageManager = stageManager;
+	}
 	@FXML
 	private void exit(ActionEvent event) {
 		Platform.exit();
@@ -182,14 +187,23 @@ public class UserController implements Initializable {
 	private void cargarPersonaEnFormulario(Persona persona) {
 
 		personaEditando = persona;
-
-		nombre.setText(persona.getNombre());
-		nacionalidad.setText(persona.getNacionalidad());
-		email.setText(persona.getEmail());
-		username.setText(persona.getCredencial().getUsername());
-		password.setText(persona.getCredencial().getPassword());
-
 		
+		System.out.println("Persona: " + persona.getNombre());
+	    System.out.println("Credencial: " + persona.getCredencial());
+
+	    nombre.setText(persona.getNombre());
+	    nacionalidad.setText(persona.getNacionalidad());
+	    email.setText(persona.getEmail());
+
+	    Credencial credencial = credencialRepository
+	            .findByPersonaId(persona.getId())
+	            .orElse(null);
+
+	    if (credencial != null) {
+	        username.setText(credencial.getUsername());
+	        password.setText(credencial.getPassword());
+	    }
+	    
 		if (persona instanceof Artista a) {
 
 			tipoPersona.setValue("Artista");
@@ -293,8 +307,9 @@ public class UserController implements Initializable {
 				persona = coord;
 			}
 
-			Credencial credencial = esEdicion ? personaEditando.getCredencial() : new Credencial();
-
+			Credencial credencial = esEdicion 
+				    ? credencialRepository.findByPersonaId(personaEditando.getId()).orElse(new Credencial())
+				    : new Credencial();
 			String nuevoUsername = username.getText();
 			String nuevoPassword = password.getText();
 
@@ -356,6 +371,7 @@ public class UserController implements Initializable {
 	}
 
 	private void clearFields() {
+		personaEditando=null;
 		nombre.clear();
 		email.clear();
 		nacionalidad.clear();
@@ -376,12 +392,10 @@ public class UserController implements Initializable {
 		camposCoordinacion.setManaged(false);
 	}
 	
-	
-
-	@FXML
+	/*@FXML
 	private void abrirEspectaculos(ActionEvent event) {
 	    try {
-	        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/espectaculos.fxml"));
+	        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/espectaculo.fxml"));
 	        Parent root = loader.load();
 
 	        Stage stage = new Stage();
@@ -395,6 +409,14 @@ public class UserController implements Initializable {
 	    }
 	}
 
+	 * */
+	
+	@FXML
+	private void abrirEspectaculos(ActionEvent event) {
+	    stageManager.switchScene(FxmlView.ESPECTACULOS);
+	}
+
+	
 	private void saveAlert(Persona user) {
 
 		Alert alert = new Alert(AlertType.INFORMATION);
@@ -444,6 +466,7 @@ public class UserController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
+		
 		tipoPersona.setItems(roles);
 
 		userTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);

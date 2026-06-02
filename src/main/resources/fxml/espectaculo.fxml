@@ -70,6 +70,10 @@
 					onAction="#guardarEspectaculo" />
 				<Button fx:id="btnEliminar" text="Eliminar"
 					onAction="#eliminarEspectaculo" />
+					<Button fx:id="btnEditar" text="Editar" 
+					onAction="#editarEspectaculo" />
+					<Button fx:id="btnNumeros" text="Gestionar Números" 
+					onAction="#abrirNumeros"/>
 			</HBox>
 		</VBox>
 	</center>

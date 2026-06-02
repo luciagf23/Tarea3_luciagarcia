@@ -54,6 +54,8 @@ public class RegistroService {
 
 		// Guardar credencial
 		credencial.setPersona(guardada);
+		guardada.setCredencial(credencial);
+		
 		credencialRepository.save(credencial);
 
 		return guardada;

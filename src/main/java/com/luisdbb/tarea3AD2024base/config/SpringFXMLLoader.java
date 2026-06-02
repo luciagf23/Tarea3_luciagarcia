@@ -34,8 +34,17 @@ public class SpringFXMLLoader {
 		System.out.println("FXML URL: " + url);
 
 		loader.setLocation(url);
-		return loader.load();
+		
+		try {
+	        return loader.load();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        throw e;
+	    }
+	}
 
+	public ApplicationContext getContext() {
+	    return context;
 	}
 
 }

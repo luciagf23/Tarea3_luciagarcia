@@ -31,10 +31,9 @@ public class PersonaService {
 		return personaRepository.save(persona);
 	}
 	
-	public List<Coordinacion> listarCoordinadores() {
-	    return coordinacionRepository.findAll();
+	public List<Coordinacion> findAllCoordinadores() {
+	    return personaRepository.findAllCoordinadores();
 	}
-
 
 	public List<Persona> listarTodas() {
 		return personaRepository.findAll();
