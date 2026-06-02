@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+	xmlns:fx="http://javafx.com/fxml"
+	fx:controller="com.luisdbb.tarea3AD2024base.controller.EspectaculoController">
+
+	<center>
+		<VBox spacing="10">
+			<padding>
+				<Insets top="10" right="10" bottom="10" left="10" />
+			</padding>
+			<TableView fx:id="tablaEspectaculos" prefHeight="250">
+				<columns>
+					<TableColumn fx:id="colNombre" text="Nombre"
+						prefWidth="150" />
+					<TableColumn fx:id="colFechaInicio" text="Fecha inicio"
+						prefWidth="120" />
+					<TableColumn fx:id="colFechaFin" text="Fecha fin"
+						prefWidth="120" />
+					<TableColumn fx:id="colCoordinador" text="Coordinador"
+						prefWidth="150" />
+				</columns>
+			</TableView>
+
+			<Separator />
+
+			<GridPane hgap="10" vgap="10">
+				<columnConstraints>
+					<ColumnConstraints halignment="RIGHT"
+						prefWidth="100" />
+					<ColumnConstraints prefWidth="250" />
+				</columnConstraints>
+
+				<rowConstraints>
+					<RowConstraints minHeight="30" />
+					<RowConstraints minHeight="30" />
+					<RowConstraints minHeight="30" />
+					<RowConstraints minHeight="30" />
+				</rowConstraints>
+
+				<Label text="Nombre:" GridPane.rowIndex="0"
+					GridPane.columnIndex="0" />
+				<TextField fx:id="txtNombre" GridPane.rowIndex="0"
+					GridPane.columnIndex="1" />
+
+				<Label text="Fecha inicio:" GridPane.rowIndex="1"
+					GridPane.columnIndex="0" />
+				<DatePicker fx:id="dateInicio" GridPane.rowIndex="1"
+					GridPane.columnIndex="1" />
+
+				<Label text="Fecha fin:" GridPane.rowIndex="2"
+					GridPane.columnIndex="0" />
+				<DatePicker fx:id="dateFin" GridPane.rowIndex="2"
+					GridPane.columnIndex="1" />
+
+				<Label text="Coordinador:" GridPane.rowIndex="3"
+					GridPane.columnIndex="0" />
+				<ComboBox fx:id="comboCoordinador" GridPane.rowIndex="3"
+					GridPane.columnIndex="1" />
+			</GridPane>
+
+			<HBox spacing="10" alignment="CENTER_RIGHT">
+				<Button fx:id="btnNuevo" text="Nuevo"
+					onAction="#limpiarFormulario" />
+				<Button fx:id="btnGuardar" text="Guardar"
+					onAction="#guardarEspectaculo" />
+				<Button fx:id="btnEliminar" text="Eliminar"
+					onAction="#eliminarEspectaculo" />
+			</HBox>
+		</VBox>
+	</center>
+
+</BorderPane>

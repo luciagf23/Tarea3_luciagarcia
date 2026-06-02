@@ -24,7 +24,33 @@ public enum FxmlView {
 		public String getFxmlFile() {
 			return "/fxml/Login.fxml";
 		}
-	};
+	},
+	
+	  ESPECTACULOS {
+        @Override
+        public String getTitle() {
+            return "Gestión de Espectáculos";
+        }
+
+        @Override
+        public String getFxmlFile() {
+            return "/fxml/espectaculos.fxml";
+        }
+    },
+
+    DETALLE_ESPECTACULO {
+        @Override
+        public String getTitle() {
+            return "Detalle del espectáculo";
+        }
+
+        @Override
+        public String getFxmlFile() {
+            return "/fxml/detalle_espectaculo.fxml";
+        }
+    };
+
+   
 
 	public abstract String getTitle();
 

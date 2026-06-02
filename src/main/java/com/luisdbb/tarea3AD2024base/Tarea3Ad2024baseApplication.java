@@ -10,7 +10,8 @@ import com.luisdbb.tarea3AD2024base.config.StageManager;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.luisdbb.tarea3AD2024base")
+
 public class Tarea3Ad2024baseApplication extends Application {
 
 	protected ConfigurableApplicationContext springContext;

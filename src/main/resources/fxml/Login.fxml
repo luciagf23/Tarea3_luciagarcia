@@ -14,7 +14,7 @@
 fx:controller="com.luisdbb.tarea3AD2024base.controller.LoginController">
    <children>
       <Rectangle fill="DODGERBLUE" height="250.0" stroke="#ffffff8b" strokeType="INSIDE" width="400.0" />
-      <Label fx:id="lblLogin" layoutX="97.0" layoutY="46.0" text="Login" textFill="WHITE">
+      <Label fx:id="lblLogin" layoutX="97.0" layoutY="46.0" text="Bienvenid@as al circo" textFill="WHITE">
          <font>
             <Font size="20.0" />
          </font>

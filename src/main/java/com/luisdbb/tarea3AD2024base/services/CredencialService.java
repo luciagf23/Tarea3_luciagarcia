@@ -11,6 +11,9 @@ public class CredencialService {
 
     @Autowired
     private CredencialRepository credencialRepository;
+    
+    @Autowired
+    private CredencialService credencialService;
 
     public Credencial guardar(Credencial credencial) {
     	validarCredenciales(credencial);
@@ -52,6 +55,8 @@ public class CredencialService {
         // normalizar
         credencial.setUsername(username.toLowerCase());
     }
+
+   
 
     
 }

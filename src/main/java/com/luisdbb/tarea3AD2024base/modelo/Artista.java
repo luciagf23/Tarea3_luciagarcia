@@ -2,18 +2,18 @@ package com.luisdbb.tarea3AD2024base.modelo;
 
 import java.util.Set;
 
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 
 @Entity
+@DiscriminatorValue("ARTISTA")
 public class Artista extends Persona{
 
 	private String apodo;
 
-    @ElementCollection
-    @Enumerated(EnumType.STRING)
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<Especialidad> especialidades;
 
     public Artista() {

@@ -79,69 +79,68 @@
 						<ComboBox fx:id="tipoPersona"
 							promptText="Seleccione tipo" />
 					</children>
-
-					<children>
-						<!-- Campos Artista -->
-						<VBox fx:id="camposArtista" visible="false" managed="false"
-							spacing="5.0">
-							<TextField fx:id="apodo" promptText="Apodo (opcional)">
-								<VBox.margin>
-									<Insets left="25.0" right="25.0" />
-								</VBox.margin>
-							</TextField>
-							<Label text="Especialidades:" textFill="WHITE">
-								<VBox.margin>
-									<Insets left="25.0" />
-								</VBox.margin>
-							</Label>
-							<CheckBox fx:id="chkAcrobacia" text="Acrobacia"
-								textFill="WHITE">
-								<VBox.margin>
-									<Insets left="25.0" />
-								</VBox.margin>
-							</CheckBox>
-							<CheckBox fx:id="chkHumor" text="Humor" textFill="WHITE">
-								<VBox.margin>
-									<Insets left="25.0" />
-								</VBox.margin>
-							</CheckBox>
-							<CheckBox fx:id="chkMagia" text="Magia" textFill="WHITE">
-								<VBox.margin>
-									<Insets left="25.0" />
-								</VBox.margin>
-							</CheckBox>
-							<CheckBox fx:id="chkEquilibrismo" text="Equilibrismo"
-								textFill="WHITE">
-								<VBox.margin>
-									<Insets left="25.0" />
-								</VBox.margin>
-							</CheckBox>
-							<CheckBox fx:id="chkMalabarismo" text="Malabarismo"
-								textFill="WHITE">
-								<VBox.margin>
-									<Insets left="25.0" />
-								</VBox.margin>
-							</CheckBox>
-						</VBox>
-
-						<!-- Campos Coordinacion -->
-						<VBox fx:id="camposCoordinacion" visible="false"
-							managed="false" spacing="5.0">
-							<CheckBox fx:id="chkSenior" text="¿Es senior?"
-								textFill="WHITE">
-								<VBox.margin>
-									<Insets left="25.0" />
-								</VBox.margin>
-							</CheckBox>
-							<DatePicker fx:id="fechaSenior"
-								promptText="Fecha senior" visible="false" managed="false">
-								<VBox.margin>
-									<Insets left="25.0" right="25.0" />
-								</VBox.margin>
-							</DatePicker>
-						</VBox>
-					</children>
 				</HBox>
+
+				<!-- Campos Artista -->
+				<VBox fx:id="camposArtista" visible="false" managed="false"
+					spacing="5.0">
+					<TextField fx:id="apodo" promptText="Apodo (opcional)">
+						<VBox.margin>
+							<Insets left="25.0" right="25.0" />
+						</VBox.margin>
+					</TextField>
+					<Label text="Especialidades:" textFill="WHITE">
+						<VBox.margin>
+							<Insets left="25.0" />
+						</VBox.margin>
+					</Label>
+					<CheckBox fx:id="chkAcrobacia" text="Acrobacia"
+						textFill="WHITE">
+						<VBox.margin>
+							<Insets left="25.0" />
+						</VBox.margin>
+					</CheckBox>
+					<CheckBox fx:id="chkHumor" text="Humor" textFill="WHITE">
+						<VBox.margin>
+							<Insets left="25.0" />
+						</VBox.margin>
+					</CheckBox>
+					<CheckBox fx:id="chkMagia" text="Magia" textFill="WHITE">
+						<VBox.margin>
+							<Insets left="25.0" />
+						</VBox.margin>
+					</CheckBox>
+					<CheckBox fx:id="chkEquilibrismo" text="Equilibrismo"
+						textFill="WHITE">
+						<VBox.margin>
+							<Insets left="25.0" />
+						</VBox.margin>
+					</CheckBox>
+					<CheckBox fx:id="chkMalabarismo" text="Malabarismo"
+						textFill="WHITE">
+						<VBox.margin>
+							<Insets left="25.0" />
+						</VBox.margin>
+					</CheckBox>
+				</VBox>
+
+				<!-- Campos Coordinacion -->
+				<VBox fx:id="camposCoordinacion" visible="false"
+					managed="false" spacing="5.0">
+					<CheckBox fx:id="chkSenior" text="¿Es senior?"
+						textFill="WHITE">
+						<VBox.margin>
+							<Insets left="25.0" />
+						</VBox.margin>
+					</CheckBox>
+					<DatePicker fx:id="fechaSenior"
+						promptText="Fecha senior" visible="false" managed="false">
+						<VBox.margin>
+							<Insets left="25.0" right="25.0" />
+						</VBox.margin>
+					</DatePicker>
+				</VBox>
+
 
 				<TextField fx:id="email" prefHeight="30.0"
 					prefWidth="230.0" promptText="Email">
@@ -153,14 +152,14 @@
 				</PasswordField>
 				<HBox prefHeight="30.0" prefWidth="250.0" spacing="10.0">
 					<children>
-						<Button fx:id="limpiar" mnemonicParsing="false"
+						<Button fx:id="limpiarButton" mnemonicParsing="false"
 							onAction="#limpiar" prefHeight="30.0" prefWidth="75.0"
 							style="-fx-background-color: white;" text="Reset">
 							<effect>
 								<DropShadow blurType="ONE_PASS_BOX" color="#1965d0" />
 							</effect>
 						</Button>
-						<Button fx:id="Guardar" alignment="CENTER"
+						<Button fx:id="guardarButton" alignment="CENTER"
 							contentDisplay="CENTER" mnemonicParsing="false"
 							onAction="#saveUser" prefHeight="30.0" prefWidth="75.0"
 							styleClass="btnGreen" text="Save" textFill="WHITE">
@@ -171,6 +170,15 @@
 								<DropShadow blurType="ONE_PASS_BOX" color="#6468b2" />
 							</effect>
 						</Button>
+						<Button fx:id="deleteButton" mnemonicParsing="false"
+							onAction="#deleteUsers" prefHeight="30.0" prefWidth="75.0"
+							text="Eliminar">
+						</Button>
+						<VBox>
+						<Button fx:id="gestionEspectáculos" onAction="#abrirEspectaculos"
+						prefHeight="30.0" prefWidth="75.0" text="Espectaculos"/>
+						</VBox>
+						
 					</children>
 					<opaqueInsets>
 						<Insets />

@@ -20,6 +20,8 @@ import com.luisdbb.tarea3AD2024base.modelo.Coordinacion;
 import com.luisdbb.tarea3AD2024base.modelo.Credencial;
 import com.luisdbb.tarea3AD2024base.modelo.Especialidad;
 import com.luisdbb.tarea3AD2024base.modelo.Rol;
+import com.luisdbb.tarea3AD2024base.repositorios.CredencialRepository;
+import com.luisdbb.tarea3AD2024base.repositorios.PersonaRepository;
 import com.luisdbb.tarea3AD2024base.modelo.Persona;
 import com.luisdbb.tarea3AD2024base.services.CredencialService;
 import com.luisdbb.tarea3AD2024base.services.PersonaService;
@@ -31,8 +33,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -51,6 +56,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -70,7 +76,7 @@ public class UserController implements Initializable {
 
 	@FXML
 	private TextField email;
-	
+
 	@FXML
 	private TextField username;
 
@@ -79,24 +85,23 @@ public class UserController implements Initializable {
 
 	@FXML
 	private ComboBox<String> tipoPersona;
-	
-	@FXML 
+
+	@FXML
 	private VBox camposArtista;
-	
-	@FXML 
+
+	@FXML
 	private VBox camposCoordinacion;
-	
-	@FXML 
+
+	@FXML
 	private TextField apodo;
-	
-	@FXML 
+
+	@FXML
 	private CheckBox chkAcrobacia, chkHumor, chkMagia, chkEquilibrismo, chkMalabarismo;
-	@FXML 
+	@FXML
 	private CheckBox chkSenior;
-	
-	@FXML 
+
+	@FXML
 	private DatePicker fechaSenior;
-	
 
 	@FXML
 	private PasswordField password;
@@ -112,17 +117,16 @@ public class UserController implements Initializable {
 
 	@FXML
 	private TableColumn<Persona, Long> colUserId;
-	
+
 	@FXML
 	private TableColumn<Persona, String> colName;
 
 	@FXML
 	private TableColumn<Persona, String> colNacion;
 
-
 	@FXML
 	private TableColumn<Persona, String> colEmail;
-	
+
 	@FXML
 	private TableColumn<Persona, String> colTipoPersona;
 
@@ -138,10 +142,15 @@ public class UserController implements Initializable {
 
 	@Autowired
 	private PersonaService personaService;
-	
+
 	@Autowired
 	private RegistroService registroService;
 
+	@Autowired
+	private CredencialRepository credencialRepository;
+
+	@Autowired
+	private PersonaRepository personaRepository;
 
 	@Autowired
 	private CredencialService credencialService;
@@ -167,68 +176,167 @@ public class UserController implements Initializable {
 		clearFields();
 	}
 
-	
+	private Persona personaEditando = null;
+
+	@FXML
+	private void cargarPersonaEnFormulario(Persona persona) {
+
+		personaEditando = persona;
+
+		nombre.setText(persona.getNombre());
+		nacionalidad.setText(persona.getNacionalidad());
+		email.setText(persona.getEmail());
+		username.setText(persona.getCredencial().getUsername());
+		password.setText(persona.getCredencial().getPassword());
+
+		
+		if (persona instanceof Artista a) {
+
+			tipoPersona.setValue("Artista");
+
+			camposArtista.setVisible(true);
+			camposArtista.setManaged(true);
+
+			camposCoordinacion.setVisible(false);
+			camposCoordinacion.setManaged(false);
+			
+			apodo.setText(a.getApodo());
+
+			chkAcrobacia.setSelected(a.getEspecialidades().contains(Especialidad.ACROBACIA));
+			chkHumor.setSelected(a.getEspecialidades().contains(Especialidad.HUMOR));
+			chkMagia.setSelected(a.getEspecialidades().contains(Especialidad.MAGIA));
+			chkEquilibrismo.setSelected(a.getEspecialidades().contains(Especialidad.EQUILIBRISMO));
+			chkMalabarismo.setSelected(a.getEspecialidades().contains(Especialidad.MALABARISMO));
+
+		} else if (persona instanceof Coordinacion c) {
+
+			tipoPersona.setValue("Coordinacion");
+
+			camposCoordinacion.setVisible(true);
+			camposCoordinacion.setManaged(true);
+
+			camposArtista.setVisible(false);
+			camposArtista.setManaged(false);
+
+			chkSenior.setSelected(c.isSenior());
+			fechaSenior.setValue(c.getFechaSenior());
+		}
+	}
+
 	@FXML
 	private void saveUser(ActionEvent event) {
-	    try {
-	        Persona persona;
+		try {
 
-	        if (tipoPersona.getValue().equals("Artista")) {
-	            Artista artista = new Artista();
-	            artista.setNombre(nombre.getText());
-	            artista.setEmail(email.getText());
-	            artista.setNacionalidad(nacionalidad.getText());
-	            
-	            if (!apodo.getText().isEmpty()) {
-	                artista.setApodo(apodo.getText());
-	            }
-	            
-	            // Especialidades
-	            Set<Especialidad> especialidades = new HashSet<>();
-	            if (chkAcrobacia.isSelected()) especialidades.add(Especialidad.ACROBACIA);
-	            if (chkHumor.isSelected()) especialidades.add(Especialidad.HUMOR);
-	            if (chkMagia.isSelected()) especialidades.add(Especialidad.MAGIA);
-	            if (chkEquilibrismo.isSelected()) especialidades.add(Especialidad.EQUILIBRISMO);
-	            if (chkMalabarismo.isSelected()) especialidades.add(Especialidad.MALABARISMO);
-	            
-	            artista.setEspecialidades(especialidades);
-	            
-	            persona = artista;
+			boolean esEdicion = (personaEditando != null);
+			Persona persona;
+			
+			if (esEdicion) {
+				
+			    boolean tipoCorrectoArtista = tipoPersona.getValue().equals("Artista") 
+			    		&& personaEditando instanceof Artista;
+			    boolean tipoCorrectoCoord = tipoPersona.getValue().equals("Coordinacion") 
+			    		&& personaEditando instanceof Coordinacion;
+			    
+			    if (!tipoCorrectoArtista && !tipoCorrectoCoord) {
+			        throw new RuntimeException("No se puede cambiar el tipo de una persona existente");
+			    }
+			}
 
-	        } else {
-	            Coordinacion coord = new Coordinacion();
-	            coord.setNombre(nombre.getText());
-	            coord.setEmail(email.getText());
-	            coord.setNacionalidad(nacionalidad.getText());
-	            coord.setSenior(chkSenior.isSelected());
-	            
-	            if (chkSenior.isSelected() && fechaSenior.getValue() != null) {
-	                coord.setFechaSenior(fechaSenior.getValue());
-	            }
-	            
-	            persona = coord;
-	        }
+			if (tipoPersona.getValue().equals("Artista")) {
 
-	        Credencial credencial = new Credencial();
-	        credencial.setUsername(username.getText());
-	        credencial.setPassword(password.getText());
-	        credencial.setRol(tipoPersona.getValue().equals("Artista") ? Rol.ARTISTA : Rol.COORDINACION);
-	        credencial.setPersona(persona);
-	        
-	        registroService.registrarPersona(persona, credencial);
+				Artista artista = esEdicion ? (Artista) personaEditando : new Artista();
 
-	        loadUserDetails();
-	        clearFields();
+				artista.setNombre(nombre.getText());
+				artista.setEmail(email.getText());
+				artista.setNacionalidad(nacionalidad.getText());
+				
 
-	        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-	        alert.setContentText("Usuario guardado correctamente");
-	        alert.showAndWait();
+				if (!apodo.getText().isEmpty()) {
+					artista.setApodo(apodo.getText());
+				} else {
+					artista.setApodo(null);
+				}
 
-	    } catch (Exception e) {
-	        Alert alert = new Alert(Alert.AlertType.ERROR);
-	        alert.setContentText(e.getMessage());
-	        alert.showAndWait();
-	    }
+				// Mantener especialidades al editar
+				Set<Especialidad> especialidades = new HashSet<>();
+
+				// Especialidades
+
+				if (chkAcrobacia.isSelected())
+					especialidades.add(Especialidad.ACROBACIA);
+				if (chkHumor.isSelected())
+					especialidades.add(Especialidad.HUMOR);
+				if (chkMagia.isSelected())
+					especialidades.add(Especialidad.MAGIA);
+				if (chkEquilibrismo.isSelected())
+					especialidades.add(Especialidad.EQUILIBRISMO);
+				if (chkMalabarismo.isSelected())
+					especialidades.add(Especialidad.MALABARISMO);
+
+				artista.setEspecialidades(especialidades);
+
+				persona = artista;
+
+			} else {
+				Coordinacion coord = esEdicion ? (Coordinacion) personaEditando : new Coordinacion();
+				coord.setNombre(nombre.getText());
+				coord.setEmail(email.getText());
+				coord.setNacionalidad(nacionalidad.getText());
+				coord.setSenior(chkSenior.isSelected());
+
+				if (chkSenior.isSelected() && fechaSenior.getValue() != null) {
+					coord.setFechaSenior(fechaSenior.getValue());
+				} else {
+					coord.setFechaSenior(null);
+				}
+
+				persona = coord;
+			}
+
+			Credencial credencial = esEdicion ? personaEditando.getCredencial() : new Credencial();
+
+			String nuevoUsername = username.getText();
+			String nuevoPassword = password.getText();
+
+			// Validación de duplicados si cambian
+			if (esEdicion) {
+				if (!credencial.getUsername().equalsIgnoreCase(nuevoUsername)) {
+					if (credencialRepository.existsByUsername(nuevoUsername.toLowerCase())) {
+						throw new RuntimeException("El username ya existe");
+					}
+				}
+			}
+
+			if (esEdicion) {
+				if (!personaEditando.getEmail().equalsIgnoreCase(persona.getEmail())) {
+					if (personaRepository.existsByEmail(persona.getEmail().toLowerCase())) {
+						throw new RuntimeException("El email ya existe");
+					}
+				}
+			}
+
+			credencial.setUsername(username.getText());
+			credencial.setPassword(password.getText());
+			credencial.setRol(tipoPersona.getValue().equals("Artista") ? Rol.ARTISTA : Rol.COORDINACION);
+			credencial.setPersona(persona);
+
+			// Guardar
+			registroService.registrarPersona(persona, credencial);
+
+			// Reset
+			personaEditando = null;
+			clearFields();
+			loadUserDetails();
+
+			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			alert.setContentText("Usuario guardado correctamente");
+			alert.showAndWait();
+
+		} catch (Exception e) {
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setContentText(e.getMessage());
+			alert.showAndWait();
+		}
 	}
 
 	@FXML
@@ -251,6 +359,7 @@ public class UserController implements Initializable {
 		nombre.clear();
 		email.clear();
 		nacionalidad.clear();
+		username.clear();
 		password.clear();
 		tipoPersona.getSelectionModel().clearSelection();
 		apodo.clear();
@@ -265,6 +374,25 @@ public class UserController implements Initializable {
 		camposArtista.setManaged(false);
 		camposCoordinacion.setVisible(false);
 		camposCoordinacion.setManaged(false);
+	}
+	
+	
+
+	@FXML
+	private void abrirEspectaculos(ActionEvent event) {
+	    try {
+	        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/espectaculos.fxml"));
+	        Parent root = loader.load();
+
+	        Stage stage = new Stage();
+	        stage.setTitle("Gestión de Espectáculos");
+	        stage.setScene(new Scene(root));
+	        stage.show();
+
+	    } catch (Exception e) {
+	    	e.printStackTrace();
+	        mostrarError("No se pudo abrir la ventana de espectáculos");
+	    }
 	}
 
 	private void saveAlert(Persona user) {
@@ -316,39 +444,39 @@ public class UserController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-	    tipoPersona.setItems(roles);
+		tipoPersona.setItems(roles);
 
-	    userTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		userTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-	    setColumnProperties();
+		setColumnProperties();
 
-	    loadUserDetails();
+		loadUserDetails();
 
-	    // Listener para mostrar campos según tipo
-	    tipoPersona.valueProperty().addListener((obs, oldVal, newVal) -> {
-	        if (newVal == null) {
-	            camposArtista.setVisible(false);
-	            camposArtista.setManaged(false);
-	            camposCoordinacion.setVisible(false);
-	            camposCoordinacion.setManaged(false);
-	        } else if (newVal.equals("Artista")) {
-	            camposArtista.setVisible(true);
-	            camposArtista.setManaged(true);
-	            camposCoordinacion.setVisible(false);
-	            camposCoordinacion.setManaged(false);
-	        } else {
-	            camposCoordinacion.setVisible(true);
-	            camposCoordinacion.setManaged(true);
-	            camposArtista.setVisible(false);
-	            camposArtista.setManaged(false);
-	        }
-	    });
+		// Listener para mostrar campos según tipo
+		tipoPersona.valueProperty().addListener((obs, oldVal, newVal) -> {
+			if (newVal == null) {
+				camposArtista.setVisible(false);
+				camposArtista.setManaged(false);
+				camposCoordinacion.setVisible(false);
+				camposCoordinacion.setManaged(false);
+			} else if (newVal.equals("Artista")) {
+				camposArtista.setVisible(true);
+				camposArtista.setManaged(true);
+				camposCoordinacion.setVisible(false);
+				camposCoordinacion.setManaged(false);
+			} else {
+				camposCoordinacion.setVisible(true);
+				camposCoordinacion.setManaged(true);
+				camposArtista.setVisible(false);
+				camposArtista.setManaged(false);
+			}
+		});
 
-	    // Mostrar/ocultar fechaSenior según el checkbox
-	    chkSenior.selectedProperty().addListener((obs, oldVal, newVal) -> {
-	        fechaSenior.setVisible(newVal);
-	        fechaSenior.setManaged(newVal);
-	    });
+		// Mostrar/ocultar fechaSenior según el checkbox
+		chkSenior.selectedProperty().addListener((obs, oldVal, newVal) -> {
+			fechaSenior.setVisible(newVal);
+			fechaSenior.setManaged(newVal);
+		});
 	}
 
 	/*
@@ -368,24 +496,24 @@ public class UserController implements Initializable {
 		 * !string.isEmpty()) { return LocalDate.parse(string, dateFormatter); } else {
 		 * return null; } } }));
 		 */
-		
+
 		colUserId.setCellValueFactory(new PropertyValueFactory<>("id"));
 		colName.setCellValueFactory(new PropertyValueFactory<>("nombre"));
 		colNacion.setCellValueFactory(new PropertyValueFactory<>("nacionalidad"));
 		colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
 		colTipoPersona.setCellValueFactory(cellData -> {
 
-		    Persona p = cellData.getValue();
+			Persona p = cellData.getValue();
 
-		    if (p instanceof Artista) {
-		        return new SimpleStringProperty("Artista");
-		    } else if (p instanceof Coordinacion) {
-		        return new SimpleStringProperty("Coordinación");
-		    }
+			if (p instanceof Artista) {
+				return new SimpleStringProperty("Artista");
+			} else if (p instanceof Coordinacion) {
+				return new SimpleStringProperty("Coordinacion");
+			}
 
-		    return new SimpleStringProperty("Desconocido");
+			return new SimpleStringProperty("Desconocido");
 		});
-		
+
 		colEdit.setCellFactory(cellFactory);
 	}
 
@@ -405,7 +533,7 @@ public class UserController implements Initializable {
 					} else {
 						btnEdit.setOnAction(e -> {
 							Persona user = getTableView().getItems().get(getIndex());
-							updateUser(user);
+							cargarPersonaEnFormulario(user);
 						});
 
 						btnEdit.setStyle("-fx-background-color: transparent;");
@@ -422,10 +550,6 @@ public class UserController implements Initializable {
 					}
 				}
 
-				private void updateUser(Persona user) {
-					nombre.setText(user.getNombre());
-					email.setText(user.getEmail());
-				}
 			};
 			return cell;
 		}
@@ -483,4 +607,14 @@ public class UserController implements Initializable {
 		}
 		alert.showAndWait();
 	}
+	
+	private void mostrarError(String msg) {
+	    Alert a = new Alert(Alert.AlertType.ERROR);
+	    a.setHeaderText("Error");
+	    a.setContentText(msg);
+	    a.showAndWait();
+	}
 }
+
+	
+

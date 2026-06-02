@@ -1,15 +1,19 @@
 package com.luisdbb.tarea3AD2024base.modelo;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.OneToOne;
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "dtype")
 public abstract class Persona {
 
 
@@ -23,6 +27,9 @@ public abstract class Persona {
     private String email;
 
     private String nacionalidad;
+    
+    @OneToOne(mappedBy = "persona", cascade = CascadeType.ALL)
+    private Credencial credencial;
     
     public Persona() {
     	
@@ -67,6 +74,16 @@ public abstract class Persona {
 	public void setNacionalidad(String nacionalidad) {
 		this.nacionalidad = nacionalidad;
 	}
+
+	public Credencial getCredencial() {
+		return credencial;
+	}
+
+	public void setCredencial(Credencial credencial) {
+		this.credencial = credencial;
+	}
+	
+	
     
     
 }

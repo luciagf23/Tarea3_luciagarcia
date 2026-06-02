@@ -5,8 +5,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.luisdbb.tarea3AD2024base.modelo.Coordinacion;
 import com.luisdbb.tarea3AD2024base.modelo.Persona;
 import com.luisdbb.tarea3AD2024base.modelo.User;
+import com.luisdbb.tarea3AD2024base.repositorios.CoordinacionRepository;
 import com.luisdbb.tarea3AD2024base.repositorios.PersonaRepository;
 
 @Service
@@ -14,9 +16,12 @@ public class PersonaService {
 
 	@Autowired
 	private PersonaRepository personaRepository;
+	
+	@Autowired
+	private CoordinacionRepository coordinacionRepository;
 
 	public Persona guardar(Persona persona) {
-		
+
 		persona.setEmail(persona.getEmail().toLowerCase());
 
 		if (personaRepository.existsByEmail(persona.getEmail())) {
@@ -25,6 +30,11 @@ public class PersonaService {
 
 		return personaRepository.save(persona);
 	}
+	
+	public List<Coordinacion> listarCoordinadores() {
+	    return coordinacionRepository.findAll();
+	}
+
 
 	public List<Persona> listarTodas() {
 		return personaRepository.findAll();
@@ -42,17 +52,17 @@ public class PersonaService {
 		return personaRepository.findAll();
 	}
 
+	
 	public void deleteInBatch(List<Persona> personas) {
 		personaRepository.deleteAll(personas);
 	}
-	
-	private void validarDatosPersona(Persona p) {
-	    if (p.getNombre() == null || p.getNombre().isBlank() ||
-	        p.getEmail() == null || p.getEmail().isBlank() ||
-	        p.getNacionalidad() == null || p.getNacionalidad().isBlank()) {
 
-	        throw new RuntimeException("Faltan datos personales obligatorios");
-	    }
+	private void validarDatosPersona(Persona p) {
+		if (p.getNombre() == null || p.getNombre().isBlank() || p.getEmail() == null || p.getEmail().isBlank()
+				|| p.getNacionalidad() == null || p.getNacionalidad().isBlank()) {
+
+			throw new RuntimeException("Faltan datos personales obligatorios");
+		}
 	}
 
 }
