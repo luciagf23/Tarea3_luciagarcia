@@ -8,4 +8,5 @@ import com.luisdbb.tarea3AD2024base.modelo.Artista;
 @Repository
 public interface ArtistaRepository extends JpaRepository<Artista, Long> {
 
+	
 }

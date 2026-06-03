@@ -1,6 +1,7 @@
 package com.luisdbb.tarea3AD2024base.modelo;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -11,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 
 @Entity
 public class Espectaculo {
@@ -29,8 +31,11 @@ public class Espectaculo {
 	@ManyToOne
 	private Coordinacion coordinador;
 
-	@OneToMany(mappedBy = "espectaculo", cascade = CascadeType.ALL)
-	private List<Numero> numeros;
+	@OneToMany(mappedBy = "espectaculo", cascade = CascadeType.ALL, orphanRemoval = true // si eliminas numero lista se
+	// elimina bbdd
+	)
+	@OrderBy("orden ASC")
+	private List<Numero> numeros = new ArrayList<>();
 
 	public Espectaculo() {
 

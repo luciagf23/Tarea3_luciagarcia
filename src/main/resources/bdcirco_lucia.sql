@@ -1,71 +1,65 @@
--- ============================================================
--- BASE DE DATOS CIRCO - TAREA 3 (Lucía)
--- Adaptado EXACTAMENTE a tus entidades JPA
--- ============================================================
+-- Fichero de datos de prueba
+-- Base de datos: bdcirco_luciagarcia
 
-DROP DATABASE IF EXISTS bdcirco_lucia;
-CREATE DATABASE bdcirco_lucia;
-USE bdcirco_lucia;
+CREATE DATABASE IF NOT EXISTS bdcirco_luciagarcia;
+USE bdcirco_luciagarcia;
 
--- ============================================================
--- PERSONAS (tabla base de la herencia JOINED)
--- ============================================================
+-- Insertar coordinadores
+INSERT INTO persona (id, dtype, nombre, email, nacionalidad, senior, fecha_senior, apodo) VALUES 
+(1, 'COORDINACION', 'Luis García', 'luis@circo.com', 'española', 1, '2020-01-15', NULL),
+(2, 'ARTISTA', 'María López', 'maria@circo.com', 'española', 0, NULL, NULL);
 
-INSERT INTO persona (id, nombre, email, nacionalidad)
-VALUES
-(1, 'Administrador General', 'admin@circo.com', 'España'),
-(2, 'Laura Gómez', 'laura@circo.com', 'España'),
-(3, 'Carlos Ruiz', 'carlos@circo.com', 'España'),
-(4, 'Ana Torres', 'ana@circo.com', 'México'),
-(5, 'Pedro López', 'pedro@circo.com', 'Argentina'),
-(6, 'Marta Díaz', 'marta@circo.com', 'España');
+INSERT INTO coordinacion (id, senior, fecha_senior) VALUES
+(1, 1, '2020-01-15'),
+(2, 0, NULL);
 
--- ============================================================
--- CREDENCIALES
--- ============================================================
+-- Insertar artistas
+INSERT INTO persona (id, dtype, nombre, email, nacionalidad, senior, fecha_senior, apodo) VALUES
+(3, 'Artista', 'Pedro Ruiz', 'pedro@circo.com', 'española', 0, NULL, 'El Gran Pedro'),
+(4, 'Artista', 'Ana Martín', 'ana@circo.com', 'francesa', 0, NULL, NULL),
+(5, 'Artista', 'Carlos Díaz', 'carlos@circo.com', 'italiana', 0, NULL, 'Carlitos');
 
-INSERT INTO credencial (id, username, password, rol, persona_id)
-VALUES
-(1, 'admin', 'admin', 'ADMIN', 1),
-(2, 'laura', 'clave123', 'COORDINACION', 2),
-(3, 'carlos', 'clave123', 'COORDINACION', 3),
-(4, 'ana', 'ana123', 'ARTISTA', 4),
-(5, 'pedro', 'pedro123', 'ARTISTA', 5),
-(6, 'marta', 'marta123', 'ARTISTA', 6);
+INSERT INTO artista (id, apodo) VALUES
+(3, 'El Gran Pedro'),
+(4, NULL),
+(5, 'Carlitos');
 
--- ============================================================
--- COORDINACIÓN (tabla hija de Persona)
--- ============================================================
+-- Especialidades
+INSERT INTO artista_especialidades (artista_id, especialidades) VALUES
+(3, 0),
+(3, 3),
+(4, 1),
+(4, 2),
+(5, 4);
 
-INSERT INTO coordinacion (id, senior, fecha_senior)
-VALUES
-(2, FALSE, NULL),              -- Laura (no senior)
-(3, TRUE, '2022-01-01');       -- Carlos (senior)
+-- Credenciales
+INSERT INTO credencial (username, password, rol, persona_id) VALUES
+('luisgarcia', '1234', 'COORDINACION', 1),
+('marialopez', '1234', 'COORDINACION', 2),
+('pedroruiz', '1234', 'ARTISTA', 3),
+('anamartin', '1234', 'ARTISTA', 4),
+('carlosdiaz', '1234', 'ARTISTA', 5);
 
--- ============================================================
--- ARTISTAS (tabla hija de Persona)
--- ============================================================
+-- Espectáculos
+INSERT INTO espectaculo (nombre, fecha_inicio, fecha_fin, coordinador_id) VALUES
+('El Gran Circo', '2026-06-01', '2026-08-31', 1),
+('Noche Mágica', '2026-09-01', '2026-11-30', 2);
 
-INSERT INTO artista (id, apodo)
-VALUES
-(4, 'La Fiera'),
-(5, NULL),
-(6, 'Volátil');
+-- Números
+INSERT INTO numero (nombre, duracion, orden, espectaculo_id) VALUES
+('Acrobacias Aéreas', 15.0, 1, 1),
+('El Mago Asombroso', 20.5, 2, 1),
+('Equilibrio Extremo', 10.0, 3, 1),
+('Humor en Escena', 12.5, 1, 2),
+('Magia y Misterio', 18.0, 2, 2),
+('Malabares de Fuego', 15.5, 3, 2);
 
--- ============================================================
--- ESPECIALIDADES (tabla generada por @ElementCollection)
--- ============================================================
-
-INSERT INTO artista_especialidades (artista_id, especialidades)
-VALUES
-(4, 'ACROBACIA'),
-(4, 'MAGIA'),
-(5, 'HUMOR'),
-(6, 'EQUILIBRISMO'),
-(6, 'MALABARISMO');
-
--- ============================================================
--- ESPECTÁCULOS
--- ============================================================
-
-INSERT INTO espectaculo (id, nombre, fecha_inicio, fecha_fin, coordinador_id
+-- Artistas en números
+INSERT INTO numero_artistas (numero_id, artistas_id) VALUES
+(1, 3),
+(1, 5),
+(2, 4),
+(3, 3),
+(4, 4),
+(5, 4),
+(6, 5);

@@ -5,9 +5,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.luisdbb.tarea3AD2024base.modelo.Artista;
 import com.luisdbb.tarea3AD2024base.modelo.Coordinacion;
 import com.luisdbb.tarea3AD2024base.modelo.Persona;
 import com.luisdbb.tarea3AD2024base.modelo.User;
+import com.luisdbb.tarea3AD2024base.repositorios.ArtistaRepository;
 import com.luisdbb.tarea3AD2024base.repositorios.CoordinacionRepository;
 import com.luisdbb.tarea3AD2024base.repositorios.PersonaRepository;
 
@@ -16,9 +18,16 @@ public class PersonaService {
 
 	@Autowired
 	private PersonaRepository personaRepository;
-	
+
 	@Autowired
 	private CoordinacionRepository coordinacionRepository;
+
+	@Autowired
+	private ArtistaRepository artistaRepository;
+
+	public List<Artista> findAllArtistas() {
+		return artistaRepository.findAll();
+	}
 
 	public Persona guardar(Persona persona) {
 
@@ -30,9 +39,9 @@ public class PersonaService {
 
 		return personaRepository.save(persona);
 	}
-	
+
 	public List<Coordinacion> findAllCoordinadores() {
-	    return personaRepository.findAllCoordinadores();
+		return personaRepository.findAllCoordinadores();
 	}
 
 	public List<Persona> listarTodas() {
@@ -51,7 +60,6 @@ public class PersonaService {
 		return personaRepository.findAll();
 	}
 
-	
 	public void deleteInBatch(List<Persona> personas) {
 		personaRepository.deleteAll(personas);
 	}

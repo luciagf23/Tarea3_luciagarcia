@@ -1,10 +1,12 @@
 package com.luisdbb.tarea3AD2024base.modelo;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 
 @Entity
 @DiscriminatorValue("COORDINACION")
@@ -15,6 +17,9 @@ public class Coordinacion extends Persona {
 
 	@Column(name = "fecha_senior")
 	private LocalDate fechaSenior;
+	
+	@OneToMany(mappedBy = "coordinador")
+	private List<Espectaculo> espectaculos;
 
 	public Coordinacion() {
 

@@ -42,7 +42,10 @@
                 <Button fx:id="btnNuevo" text="Nuevo" onAction="#nuevoNumero"/>
                 <Button fx:id="btnGuardar" text="Guardar" onAction="#guardarNumero"/>
                 <Button fx:id="btnEliminar" text="Eliminar" onAction="#eliminarNumero"/>
+               
             </HBox>
+            	<ListView fx:id="listaArtistas" prefHeight="150" prefWidth="200" style="-fx-padding: 10;"/>
+
         </VBox>
     </bottom>
 </BorderPane>

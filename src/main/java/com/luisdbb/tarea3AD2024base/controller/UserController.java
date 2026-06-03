@@ -139,7 +139,6 @@ public class UserController implements Initializable {
 	@FXML
 	private MenuItem deleteUsers;
 
-	
 	private StageManager stageManager;
 
 	@Autowired

@@ -175,7 +175,7 @@
 							text="Eliminar">
 						</Button>
 						<VBox>
-						<Button fx:id="gestionEspectáculos" onAction="#abrirEspectaculos"
+						<Button fx:id="gestionEspectaculos" onAction="#abrirEspectaculos"
 						prefHeight="30.0" prefWidth="75.0" text="Espectaculos"/>
 						</VBox>
 						

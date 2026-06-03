@@ -1,13 +1,13 @@
 package com.luisdbb.tarea3AD2024base.controller;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 
 import com.luisdbb.tarea3AD2024base.config.StageManager;

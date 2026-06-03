@@ -6,21 +6,23 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToMany;
 
 @Entity
 @DiscriminatorValue("ARTISTA")
-public class Artista extends Persona{
+public class Artista extends Persona {
 
 	private String apodo;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Set<Especialidad> especialidades;
+	@ElementCollection(fetch = FetchType.EAGER)
+	private Set<Especialidad> especialidades;
 
-    public Artista() {
-    	
-    }
-    
+	@ManyToMany(mappedBy = "artistas")
+	private Set<Numero> numeros;
 
+	public Artista() {
+
+	}
 
 	public Artista(Long id, String nombre, String email, String nacionalidad, String apodo,
 			Set<Especialidad> especialidades) {
@@ -45,6 +47,9 @@ public class Artista extends Persona{
 		this.especialidades = especialidades;
 	}
 
-	
-    
+	@Override
+	public String toString() {
+		return getNombre();
+	}
+
 }

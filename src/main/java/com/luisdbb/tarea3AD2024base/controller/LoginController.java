@@ -46,6 +46,7 @@ public class LoginController implements Initializable {
 	@Autowired
 	private UserService userService;
 
+	
 	private StageManager stageManager;
 
 	@Autowired
