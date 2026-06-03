@@ -100,10 +100,13 @@ public class NumeroController implements Initializable {
 		listaArtistas.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 		tablaNumeros.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+			 
 			if (newVal != null)
 				cargarNumeroEnFormulario(newVal);
 		});
 	}
+	
+
 
 	private void cargarNumeros() {
 		listaNumeros.clear();
@@ -147,7 +150,7 @@ public class NumeroController implements Initializable {
 	@FXML
 	private void guardarNumero(ActionEvent event) {
 		try {
-			
+		
 			Set<Artista> artistasSeleccionados = new HashSet<>(listaArtistas.getSelectionModel().getSelectedItems());
 			 System.out.println("Artistas seleccionados: " + artistasSeleccionados.size());
 			
@@ -182,6 +185,7 @@ public class NumeroController implements Initializable {
 		} catch (Exception e) {
 			mostrarError(e.getMessage());
 		}
+		
 	}
 
 	@FXML
@@ -246,8 +250,10 @@ public class NumeroController implements Initializable {
 
 	private void mostrarError(String msg) {
 		Alert alert = new Alert(Alert.AlertType.ERROR);
-		alert.setContentText(msg);
-		alert.showAndWait();
+		alert.setTitle("Error");
+	    alert.setHeaderText("Ha ocurrido un error");
+	    alert.setContentText(msg);
+	    alert.showAndWait();
 	}
 
 	private void mostrarInfo(String msg) {

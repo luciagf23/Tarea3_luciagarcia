@@ -33,12 +33,13 @@ public class Tarea3Ad2024baseApplication extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		
-	    SpringFXMLLoader springFXMLLoader = springContext.getBean(SpringFXMLLoader.class);
-
-	    stageManager = new StageManager(springFXMLLoader, primaryStage);
-
-	    // Mostrar la primera escena
+	   
+	    stageManager = springContext.getBean(StageManager.class);
+	    
+	    stageManager.setPrimaryStage(primaryStage);
+	    
 	    stageManager.switchScene(FxmlView.LOGIN);
+
 
 	}
 

@@ -43,11 +43,6 @@ public class NumeroService {
 			throw new RuntimeException("La duración debe ser mayor que 0");
 		}
 
-		// Al menos un artista
-		if (numero.getArtistas() == null || numero.getArtistas().isEmpty()) {
-			throw new RuntimeException("Debe asignar al menos un artista");
-		}
-
 		validarOrden(numero);
 
 	}

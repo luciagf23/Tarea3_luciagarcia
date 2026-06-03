@@ -6,6 +6,8 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.luisdbb.tarea3AD2024base.controller.EspectaculoController;
 import com.luisdbb.tarea3AD2024base.controller.LoginController;
@@ -22,15 +24,22 @@ import javafx.stage.Stage;
 /**
  * Manages switching Scenes on the Primary Stage
  */
+
+@Component
 public class StageManager {
 
 	private static final Logger LOG = getLogger(StageManager.class);
-	private final Stage primaryStage;
+	private Stage primaryStage;
 	private final SpringFXMLLoader springFXMLLoader;
+	
+	
+	public void setPrimaryStage(Stage stage) {
+	    this.primaryStage = stage;
+	}
 
-	public StageManager(SpringFXMLLoader springFXMLLoader, Stage stage) {
+	@Autowired
+	public StageManager(SpringFXMLLoader springFXMLLoader) {
 		this.springFXMLLoader = springFXMLLoader;
-		this.primaryStage = stage;
 	}
 
 	public void switchScene(final FxmlView view) {
@@ -80,42 +89,6 @@ public class StageManager {
 	 * fxmlFilePath, exception); } return rootNode; }
 	 */
 
-	/*
-	private Parent loadViewNodeHierarchy(String fxmlFilePath) {
-		try {
-			System.out.println(">>> loadViewNodeHierarchy: " + fxmlFilePath);
-			FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFilePath));
-			loader.setControllerFactory(springFXMLLoader.getContext()::getBean);
-
-			Parent root = loader.load();
-
-			Object controller = loader.getController();
-
-			if (controller instanceof LoginController c) {
-				c.setStageManager(this);
-			}
-
-			if (controller instanceof EspectaculoController c) {
-				c.setStageManager(this);
-			}
-			if (controller instanceof UserController c) {
-				c.setStageManager(this);
-			}
-			if (controller instanceof NumeroController c) {
-				c.setStageManager(this);
-			}
-			//
-
-			return root;
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			logAndExit("Unable to load FXML view " + fxmlFilePath, e);
-			return null;
-		}
-	}
-
-*/
 	
 	private Parent loadViewNodeHierarchy(String fxmlFilePath) {
 	    try {
