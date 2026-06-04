@@ -73,6 +73,9 @@ public class EspectaculoController implements Initializable {
 
 	@FXML
 	private Button btnNumeros;
+	
+	@FXML
+	private Button btnDetalles;
 
 	@Autowired
 	private EspectaculoService espectaculoService;
@@ -269,32 +272,24 @@ public class EspectaculoController implements Initializable {
 		cargarEspectaculoEnFormulario(seleccionado);
 	}
 
-	@FXML
-	private void abrirNumeros(ActionEvent event) {
-		Espectaculo seleccionado = tablaEspectaculos.getSelectionModel().getSelectedItem();
-		if (seleccionado == null) {
-			mostrarError("Selecciona un espectáculo primero");
-			return;
-		}
-		sesionService.setEspectaculoActual(seleccionado);
-		stageManager.switchScene(FxmlView.NUMEROS);
-	}
-
+	
 	@FXML
 	private void onVerDetalles(ActionEvent event) {
 		Espectaculo seleccionado = tablaEspectaculos.getSelectionModel().getSelectedItem();
-
+		
 		if (seleccionado == null) {
 			mostrarError("Seleccione un espectáculo");
 			return;
 		}
+		Espectaculo completo = espectaculoService.cargarEspectaculoCompleto(seleccionado.getId());
+		
 
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/detalle_espectaculo.fxml"));
 			Parent root = loader.load();
 
 			DetalleEspectaculoController controller = loader.getController();
-			controller.setEspectaculo(seleccionado);
+			controller.setEspectaculo(completo);
 
 			Stage stage = new Stage();
 			stage.setTitle("Detalle del espectáculo");
@@ -307,6 +302,18 @@ public class EspectaculoController implements Initializable {
 		}
 	}
 
+	@FXML
+	private void abrirNumeros(ActionEvent event) {
+		Espectaculo seleccionado = tablaEspectaculos.getSelectionModel().getSelectedItem();
+		if (seleccionado == null) {
+			mostrarError("Selecciona un espectáculo primero");
+			return;
+		}
+		sesionService.setEspectaculoActual(seleccionado);
+		stageManager.switchScene(FxmlView.NUMEROS);
+	}
+
+	
 	@FXML
 	private void logout(ActionEvent event) throws IOException {
 		sesionService.cerrarSesion();

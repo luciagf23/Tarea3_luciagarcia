@@ -1,0 +1,24 @@
+<VBox spacing="10" alignment="CENTER" xmlns="http://javafx.com/javafx/23"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.luisdbb.tarea3AD2024base.controller.EspecialidadController">
+
+    <Label text="Gestión de Especialidades" style="-fx-font-size: 20;" />
+
+    <TextField fx:id="txtNombre" promptText="Nombre de la especialidad" />
+    <TextField fx:id="txtDescripcion" promptText="Descripción" />
+
+    <HBox spacing="10">
+        <Button text="Guardar" onAction="#guardar" />
+        <Button text="Eliminar" onAction="#eliminar" />
+        <Button text="Limpiar" onAction="#limpiar" />
+    </HBox>
+
+    <TableView fx:id="tabla" prefHeight="300">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="50" />
+            <TableColumn fx:id="colNombre" text="Nombre" prefWidth="150" />
+            <TableColumn fx:id="colDescripcion" text="Descripción" prefWidth="200" />
+        </columns>
+    </TableView>
+
+</VBox>

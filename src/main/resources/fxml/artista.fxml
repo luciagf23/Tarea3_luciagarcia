@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.luisdbb.tarea3AD2024base.controller.ArtistaController"
+      spacing="15" alignment="TOP_CENTER" prefWidth="700" prefHeight="600">
+
+    <Label text="Gestión de Artistas" style="-fx-font-size: 22px; -fx-font-weight: bold;" />
+
+    <!-- FORMULARIO -->
+    <GridPane hgap="10" vgap="10">
+        <columnConstraints>
+            <ColumnConstraints halignment="RIGHT" />
+            <ColumnConstraints halignment="LEFT" />
+        </columnConstraints>
+
+        <Label text="Nombre:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtNombre" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Nacionalidad:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtNacionalidad" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="Apodo:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtApodo" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+    </GridPane>
+
+    <!-- ESPECIALIDADES -->
+    <HBox spacing="10" alignment="CENTER">
+        <ComboBox fx:id="comboEspecialidad" prefWidth="200"/>
+        <Button text="Añadir especialidad" onAction="#añadirEspecialidad"/>
+    </HBox>
+
+    <Label text="Especialidades asignadas:" style="-fx-font-weight: bold;"/>
+    <ListView fx:id="listaEspecialidades" prefHeight="120" prefWidth="300"/>
+
+    <Button text="Eliminar especialidad seleccionada" onAction="#eliminarEspecialidad"/>
+
+    <!-- BOTONES CRUD -->
+    <HBox spacing="15" alignment="CENTER">
+        <Button text="Guardar" onAction="#guardarArtista"/>
+        <Button text="Eliminar" onAction="#eliminarArtista"/>
+        <Button text="Limpiar" onAction="#limpiar"/>
+    </HBox>
+
+    <!-- TABLA DE ARTISTAS -->
+    <TableView fx:id="tablaArtistas" prefHeight="250" prefWidth="650">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
+            <TableColumn fx:id="colNombre" text="Nombre" prefWidth="150"/>
+            <TableColumn fx:id="colNacionalidad" text="Nacionalidad" prefWidth="150"/>
+            <TableColumn fx:id="colApodo" text="Apodo" prefWidth="150"/>
+        </columns>
+    </TableView>
+
+</VBox>
+

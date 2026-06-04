@@ -7,12 +7,16 @@ import org.springframework.stereotype.Service;
 
 import com.luisdbb.tarea3AD2024base.modelo.Espectaculo;
 import com.luisdbb.tarea3AD2024base.repositorios.EspectaculoRepository;
+import com.luisdbb.tarea3AD2024base.repositorios.NumeroRepository;
 
 @Service
 public class EspectaculoService {
 
 	@Autowired
 	private EspectaculoRepository espectaculoRepository;
+
+	@Autowired
+	private NumeroRepository numeroRepository;
 
 	public Espectaculo guardar(Espectaculo espectaculo) {
 
@@ -21,6 +25,7 @@ public class EspectaculoService {
 		validarFechas(espectaculo);
 		validarDuracionMaxima(espectaculo);
 		validarCoordinador(espectaculo);
+		validarEspectaculo(espectaculo);
 
 		return espectaculoRepository.save(espectaculo);
 	}
@@ -38,6 +43,18 @@ public class EspectaculoService {
 
 		if (espectaculoRepository.existsByNombre(e.getNombre())) {
 			throw new RuntimeException("Ya existe un espectáculo con ese nombre");
+		}
+
+	}
+
+	private void validarEspectaculo(Espectaculo e) {
+
+		if (e.getNombre() == null || e.getNombre().isBlank()) {
+
+			throw new RuntimeException("Debe indicar un nombre para el espectáculo");
+		}
+		if (e.getNombre().length() > 25) {
+			throw new RuntimeException("El nombre no puede superar los 25 caracteres");
 		}
 
 	}
@@ -64,6 +81,17 @@ public class EspectaculoService {
 		if (e.getCoordinador() == null) {
 			throw new RuntimeException("Debe asignarse un coordinador");
 		}
+	}
+
+	public void validarMinimoNumeros(Espectaculo e) {
+		long count = numeroRepository.countByEspectaculoId(e.getId());
+		if (count < 3) {
+			throw new RuntimeException("El espectáculo debe tener al menos 3 números");
+		}
+	}
+
+	public Espectaculo cargarEspectaculoCompleto(Long id) {
+		return espectaculoRepository.findByIdWithNumerosAndArtistas(id);
 	}
 
 	public List<Espectaculo> listarTodos() {

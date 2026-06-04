@@ -2,13 +2,13 @@ package com.luisdbb.tarea3AD2024base.config;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.util.Objects;
 import java.util.ResourceBundle;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.luisdbb.tarea3AD2024base.controller.ArtistaController;
 import com.luisdbb.tarea3AD2024base.controller.EspectaculoController;
 import com.luisdbb.tarea3AD2024base.controller.LoginController;
 import com.luisdbb.tarea3AD2024base.controller.NumeroController;
@@ -31,10 +31,9 @@ public class StageManager {
 	private static final Logger LOG = getLogger(StageManager.class);
 	private Stage primaryStage;
 	private final SpringFXMLLoader springFXMLLoader;
-	
-	
+
 	public void setPrimaryStage(Stage stage) {
-	    this.primaryStage = stage;
+		this.primaryStage = stage;
 	}
 
 	@Autowired
@@ -89,41 +88,44 @@ public class StageManager {
 	 * fxmlFilePath, exception); } return rootNode; }
 	 */
 
-	
 	private Parent loadViewNodeHierarchy(String fxmlFilePath) {
-	    try {
-	        System.out.println(">>> loadViewNodeHierarchy: " + fxmlFilePath);
-	        FXMLLoader loader = new FXMLLoader();
-	        loader.setControllerFactory(springFXMLLoader.getContext()::getBean);
-	        loader.setResources(ResourceBundle.getBundle("Bundle"));
-	        var url = getClass().getResource(fxmlFilePath);
-	        System.out.println(">>> URL: " + url);
-	        loader.setLocation(url);
-	        Parent root = loader.load();
+		try {
+			System.out.println(">>> loadViewNodeHierarchy: " + fxmlFilePath);
+			FXMLLoader loader = new FXMLLoader();
+			loader.setControllerFactory(springFXMLLoader.getContext()::getBean);
+			loader.setResources(ResourceBundle.getBundle("Bundle"));
+			var url = getClass().getResource(fxmlFilePath);
+			System.out.println(">>> URL: " + url);
+			loader.setLocation(url);
+			Parent root = loader.load();
 
-	        Object controller = loader.getController();
+			Object controller = loader.getController();
 
-	        if (controller instanceof LoginController c) {
-	            c.setStageManager(this);
-	        }
-	        if (controller instanceof EspectaculoController c) {
-	            c.setStageManager(this);
-	        }
-	        if (controller instanceof UserController c) {
-	            c.setStageManager(this);
-	        }
-	        if (controller instanceof NumeroController c) {
-	            c.setStageManager(this);
-	        }
+			if (controller instanceof LoginController c) {
+				c.setStageManager(this);
+			}
+			if (controller instanceof EspectaculoController c) {
+				c.setStageManager(this);
+			}
+			if (controller instanceof UserController c) {
+				c.setStageManager(this);
+			}
+			if (controller instanceof NumeroController c) {
+				c.setStageManager(this);
+			}
+			if (controller instanceof ArtistaController c) {
+				c.setStageManager(this);
+			}
 
-	        return root;
+			return root;
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        logAndExit("Unable to load FXML view " + fxmlFilePath, e);
-	        return null;
-	    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			logAndExit("Unable to load FXML view " + fxmlFilePath, e);
+			return null;
+		}
 	}
+
 	private void logAndExit(String errorMsg, Exception exception) {
 		LOG.error(errorMsg, exception, exception.getCause());
 		Platform.exit();

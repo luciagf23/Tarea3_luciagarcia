@@ -46,7 +46,6 @@ public class LoginController implements Initializable {
 	@Autowired
 	private UserService userService;
 
-	
 	private StageManager stageManager;
 
 	@Autowired
@@ -84,6 +83,11 @@ public class LoginController implements Initializable {
 
 	public String getUsername() {
 		return username.getText();
+	}
+
+	@FXML
+	private void verEspectaculos(ActionEvent event) {
+		stageManager.switchScene(FxmlView.INVITADO);
 	}
 
 	@Override

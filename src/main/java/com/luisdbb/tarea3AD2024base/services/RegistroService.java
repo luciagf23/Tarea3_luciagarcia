@@ -28,9 +28,7 @@ public class RegistroService {
 			validarEmailUnico(persona.getEmail());
 		}
 
-		if (persona instanceof Artista a) {
-			validarEspecialidades(a.getEspecialidades());
-		}
+		
 
 		if (persona instanceof Coordinacion c) {
 			validarCoordinacion(c);
@@ -100,11 +98,7 @@ public class RegistroService {
 		cred.setUsername(username.toLowerCase());
 	}
 
-	private void validarEspecialidades(java.util.Set<Especialidad> especialidades) {
-		if (especialidades == null || especialidades.isEmpty()) {
-			throw new RuntimeException("El artista debe tener al menos una especialidad");
-		}
-	}
+
 
 	private void validarCoordinacion(Coordinacion c) {
 		if (c.isSenior() && c.getFechaSenior() == null) {

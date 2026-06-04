@@ -1,12 +1,15 @@
 package com.luisdbb.tarea3AD2024base.controller;
 
 import java.net.URL;
+import java.util.Comparator;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 import com.luisdbb.tarea3AD2024base.modelo.Espectaculo;
 import com.luisdbb.tarea3AD2024base.modelo.Numero;
-import com.luisdbb.tarea3AD2024base.services.NumeroService;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -19,126 +22,82 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 public class DetalleEspectaculoController implements Initializable {
 
-    @FXML
-    private Label lblNombre;
+	@FXML
+	private Label lblNombre;
 
-    @FXML
-    private Label lblFechaInicio;
+	@FXML
+	private Label lblFechaInicio;
 
-    @FXML
-    private Label lblFechaFin;
+	@FXML
+	private Label lblFechaFin;
 
-    @FXML
-    private Label lblCoordinador;
+	@FXML
+	private Label lblCoordinador;
 
-    @FXML
-    private TableView<Numero> tablaNumeros;
+	@FXML
+	private TableView<Numero> tablaNumeros;
 
-    @FXML
-    private TableColumn<Numero, Integer> colOrden;
+	@FXML
+	private TableColumn<Numero, Integer> colOrden;
 
-    @FXML
-    private TableColumn<Numero, String> colEspecialidad;
+	@FXML
+	private TableColumn<Numero, String> colEspecialidad;
 
-    @FXML
-    private TableColumn<Numero, Double> colDuracion;
+	@FXML
+	private TableColumn<Numero, String> colArtistas;
 
-    @FXML
-    private Button btnAgregarNumero;
+	@FXML
+	private TableColumn<Numero, Double> colDuracion;
 
-    @FXML
-    private Button btnEditarNumero;
+	private Espectaculo espectaculo;
 
-    @FXML
-    private Button btnEliminarNumero;
+	public DetalleEspectaculoController() {
 
-    private Espectaculo espectaculo;
+	}
 
-    private final NumeroService numeroService;
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		configurarTabla();
+	}
 
-    public DetalleEspectaculoController(NumeroService numeroService) {
-        this.numeroService = numeroService;
-    }
+	public void setEspectaculo(Espectaculo espectaculo) {
+		this.espectaculo = espectaculo;
+		cargarDatosEspectaculo();
+		cargarNumeros();
+	}
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        configurarTabla();
-    }
+	private void cargarDatosEspectaculo() {
+		lblNombre.setText(espectaculo.getNombre());
+		lblFechaInicio.setText(espectaculo.getFechaInicio().toString());
+		lblFechaFin.setText(espectaculo.getFechaFin().toString());
+		lblCoordinador.setText(espectaculo.getCoordinador().getNombre());
+	}
 
-  
-   
-    public void setEspectaculo(Espectaculo espectaculo) {
-        this.espectaculo = espectaculo;
-        cargarDatosEspectaculo();
-        cargarNumeros();
-    }
+	private void configurarTabla() {
+		colOrden.setCellValueFactory(new PropertyValueFactory<>("orden"));
+		colDuracion.setCellValueFactory(new PropertyValueFactory<>("duracion"));
+		colArtistas.setCellValueFactory(cellData -> new SimpleStringProperty(
+				cellData.getValue().getArtistas().stream().map(a -> a.getNombre()).collect(Collectors.joining(", "))));
 
-   
-    private void cargarDatosEspectaculo() {
-        lblNombre.setText(espectaculo.getNombre());
-        lblFechaInicio.setText(espectaculo.getFechaInicio().toString());
-        lblFechaFin.setText(espectaculo.getFechaFin().toString());
-        lblCoordinador.setText(espectaculo.getCoordinador().getNombre());
-    }
+	}
 
-    
-    private void configurarTabla() {
-        colOrden.setCellValueFactory(new PropertyValueFactory<>("orden"));
-        colEspecialidad.setCellValueFactory(new PropertyValueFactory<>("especialidad"));
-        colDuracion.setCellValueFactory(new PropertyValueFactory<>("duracion"));
-    }
+	private void cargarNumeros() {
+		List<Numero> numerosOrdenados = espectaculo.getNumeros().stream()
+				.sorted(Comparator.comparingInt(Numero::getOrden)).toList();
+		tablaNumeros.setItems(FXCollections.observableArrayList(espectaculo.getNumeros()));
+	}
 
- 
-    private void cargarNumeros() {
-        tablaNumeros.setItems(
-                FXCollections.observableArrayList(espectaculo.getNumeros())
-        );
-    }
+	private void mostrarInfo(String msg) {
+		Alert a = new Alert(Alert.AlertType.INFORMATION);
+		a.setHeaderText(null);
+		a.setContentText(msg);
+		a.showAndWait();
+	}
 
-  
-    @FXML
-    private void onAgregarNumero() {
-        mostrarInfo("Funcionalidad pendiente (se implementa en el módulo de Números)");
-    }
-
-    
-    @FXML
-    private void onEditarNumero() {
-        Numero seleccionado = tablaNumeros.getSelectionModel().getSelectedItem();
-
-        if (seleccionado == null) {
-            mostrarError("Seleccione un número");
-            return;
-        }
-
-        mostrarInfo("Funcionalidad pendiente (se implementa en el módulo de Números)");
-    }
-
-  
-    @FXML
-    private void onEliminarNumero() {
-        Numero seleccionado = tablaNumeros.getSelectionModel().getSelectedItem();
-
-        if (seleccionado == null) {
-            mostrarError("Seleccione un número");
-            return;
-        }
-
-        mostrarInfo("Funcionalidad pendiente (se implementa en el módulo de Números)");
-    }
-
-   
-    private void mostrarInfo(String msg) {
-        Alert a = new Alert(Alert.AlertType.INFORMATION);
-        a.setHeaderText(null);
-        a.setContentText(msg);
-        a.showAndWait();
-    }
-
-    private void mostrarError(String msg) {
-        Alert a = new Alert(Alert.AlertType.ERROR);
-        a.setHeaderText("Error");
-        a.setContentText(msg);
-        a.showAndWait();
-    }
+	private void mostrarError(String msg) {
+		Alert a = new Alert(Alert.AlertType.ERROR);
+		a.setHeaderText("Error");
+		a.setContentText(msg);
+		a.showAndWait();
+	}
 }

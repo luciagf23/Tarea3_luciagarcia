@@ -18,7 +18,7 @@ import com.luisdbb.tarea3AD2024base.config.StageManager;
 import com.luisdbb.tarea3AD2024base.modelo.Artista;
 import com.luisdbb.tarea3AD2024base.modelo.Coordinacion;
 import com.luisdbb.tarea3AD2024base.modelo.Credencial;
-import com.luisdbb.tarea3AD2024base.modelo.Especialidad;
+import com.luisdbb.tarea3AD2024base.modelo.Espectaculo;
 import com.luisdbb.tarea3AD2024base.modelo.Rol;
 import com.luisdbb.tarea3AD2024base.repositorios.CredencialRepository;
 import com.luisdbb.tarea3AD2024base.repositorios.PersonaRepository;
@@ -111,10 +111,14 @@ public class UserController implements Initializable {
 
 	@FXML
 	private Button saveUser;
-	
+
 	@FXML
 	private Button gestionEspectaculos;
 
+	@FXML
+	private Button btnDetalles;
+	
+	
 	@FXML
 	private TableView<Persona> userTable;
 
@@ -135,6 +139,9 @@ public class UserController implements Initializable {
 
 	@FXML
 	private TableColumn<Persona, Boolean> colEdit;
+	
+	@FXML
+	private TableView<Espectaculo> tablaEspectaculos;
 
 	@FXML
 	private MenuItem deleteUsers;
@@ -160,8 +167,9 @@ public class UserController implements Initializable {
 	private ObservableList<String> roles = FXCollections.observableArrayList("Artista", "Coordinacion");
 
 	public void setStageManager(StageManager stageManager) {
-	    this.stageManager = stageManager;
+		this.stageManager = stageManager;
 	}
+
 	@FXML
 	private void exit(ActionEvent event) {
 		Platform.exit();
@@ -186,23 +194,21 @@ public class UserController implements Initializable {
 	private void cargarPersonaEnFormulario(Persona persona) {
 
 		personaEditando = persona;
-		
+
 		System.out.println("Persona: " + persona.getNombre());
-	    System.out.println("Credencial: " + persona.getCredencial());
+		System.out.println("Credencial: " + persona.getCredencial());
 
-	    nombre.setText(persona.getNombre());
-	    nacionalidad.setText(persona.getNacionalidad());
-	    email.setText(persona.getEmail());
+		nombre.setText(persona.getNombre());
+		nacionalidad.setText(persona.getNacionalidad());
+		email.setText(persona.getEmail());
 
-	    Credencial credencial = credencialRepository
-	            .findByPersonaId(persona.getId())
-	            .orElse(null);
+		Credencial credencial = credencialRepository.findByPersonaId(persona.getId()).orElse(null);
 
-	    if (credencial != null) {
-	        username.setText(credencial.getUsername());
-	        password.setText(credencial.getPassword());
-	    }
-	    
+		if (credencial != null) {
+			username.setText(credencial.getUsername());
+			password.setText(credencial.getPassword());
+		}
+
 		if (persona instanceof Artista a) {
 
 			tipoPersona.setValue("Artista");
@@ -212,15 +218,10 @@ public class UserController implements Initializable {
 
 			camposCoordinacion.setVisible(false);
 			camposCoordinacion.setManaged(false);
-			
+
 			apodo.setText(a.getApodo());
 
-			chkAcrobacia.setSelected(a.getEspecialidades().contains(Especialidad.ACROBACIA));
-			chkHumor.setSelected(a.getEspecialidades().contains(Especialidad.HUMOR));
-			chkMagia.setSelected(a.getEspecialidades().contains(Especialidad.MAGIA));
-			chkEquilibrismo.setSelected(a.getEspecialidades().contains(Especialidad.EQUILIBRISMO));
-			chkMalabarismo.setSelected(a.getEspecialidades().contains(Especialidad.MALABARISMO));
-
+			
 		} else if (persona instanceof Coordinacion c) {
 
 			tipoPersona.setValue("Coordinacion");
@@ -242,17 +243,17 @@ public class UserController implements Initializable {
 
 			boolean esEdicion = (personaEditando != null);
 			Persona persona;
-			
+
 			if (esEdicion) {
-				
-			    boolean tipoCorrectoArtista = tipoPersona.getValue().equals("Artista") 
-			    		&& personaEditando instanceof Artista;
-			    boolean tipoCorrectoCoord = tipoPersona.getValue().equals("Coordinacion") 
-			    		&& personaEditando instanceof Coordinacion;
-			    
-			    if (!tipoCorrectoArtista && !tipoCorrectoCoord) {
-			        throw new RuntimeException("No se puede cambiar el tipo de una persona existente");
-			    }
+
+				boolean tipoCorrectoArtista = tipoPersona.getValue().equals("Artista")
+						&& personaEditando instanceof Artista;
+				boolean tipoCorrectoCoord = tipoPersona.getValue().equals("Coordinacion")
+						&& personaEditando instanceof Coordinacion;
+
+				if (!tipoCorrectoArtista && !tipoCorrectoCoord) {
+					throw new RuntimeException("No se puede cambiar el tipo de una persona existente");
+				}
 			}
 
 			if (tipoPersona.getValue().equals("Artista")) {
@@ -262,7 +263,6 @@ public class UserController implements Initializable {
 				artista.setNombre(nombre.getText());
 				artista.setEmail(email.getText());
 				artista.setNacionalidad(nacionalidad.getText());
-				
 
 				if (!apodo.getText().isEmpty()) {
 					artista.setApodo(apodo.getText());
@@ -270,24 +270,7 @@ public class UserController implements Initializable {
 					artista.setApodo(null);
 				}
 
-				// Mantener especialidades al editar
-				Set<Especialidad> especialidades = new HashSet<>();
-
-				// Especialidades
-
-				if (chkAcrobacia.isSelected())
-					especialidades.add(Especialidad.ACROBACIA);
-				if (chkHumor.isSelected())
-					especialidades.add(Especialidad.HUMOR);
-				if (chkMagia.isSelected())
-					especialidades.add(Especialidad.MAGIA);
-				if (chkEquilibrismo.isSelected())
-					especialidades.add(Especialidad.EQUILIBRISMO);
-				if (chkMalabarismo.isSelected())
-					especialidades.add(Especialidad.MALABARISMO);
-
-				artista.setEspecialidades(especialidades);
-
+				
 				persona = artista;
 
 			} else {
@@ -306,9 +289,9 @@ public class UserController implements Initializable {
 				persona = coord;
 			}
 
-			Credencial credencial = esEdicion 
-				    ? credencialRepository.findByPersonaId(personaEditando.getId()).orElse(new Credencial())
-				    : new Credencial();
+			Credencial credencial = esEdicion
+					? credencialRepository.findByPersonaId(personaEditando.getId()).orElse(new Credencial())
+					: new Credencial();
 			String nuevoUsername = username.getText();
 			String nuevoPassword = password.getText();
 
@@ -368,9 +351,26 @@ public class UserController implements Initializable {
 
 		loadUserDetails();
 	}
+	
+	@FXML
+	private void onGestionarEspecialidades(ActionEvent event) {
+	    try {
+	        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/especialidad.fxml"));
+	        Parent root = loader.load();
+
+	        Stage stage = new Stage();
+	        stage.setTitle("Gestión de Especialidades");
+	        stage.setScene(new Scene(root));
+	        stage.show();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+
 
 	private void clearFields() {
-		personaEditando=null;
+		personaEditando = null;
 		nombre.clear();
 		email.clear();
 		nacionalidad.clear();
@@ -390,32 +390,32 @@ public class UserController implements Initializable {
 		camposCoordinacion.setVisible(false);
 		camposCoordinacion.setManaged(false);
 	}
-	
-	/*@FXML
-	private void abrirEspectaculos(ActionEvent event) {
-	    try {
-	        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/espectaculo.fxml"));
-	        Parent root = loader.load();
 
-	        Stage stage = new Stage();
-	        stage.setTitle("Gestión de Espectáculos");
-	        stage.setScene(new Scene(root));
-	        stage.show();
+	/*
+	 * @FXML private void abrirEspectaculos(ActionEvent event) { try { FXMLLoader
+	 * loader = new FXMLLoader(getClass().getResource("/fxml/espectaculo.fxml"));
+	 * Parent root = loader.load();
+	 * 
+	 * Stage stage = new Stage(); stage.setTitle("Gestión de Espectáculos");
+	 * stage.setScene(new Scene(root)); stage.show();
+	 * 
+	 * } catch (Exception e) { e.printStackTrace();
+	 * mostrarError("No se pudo abrir la ventana de espectáculos"); } }
+	 * 
+	 */
 
-	    } catch (Exception e) {
-	    	e.printStackTrace();
-	        mostrarError("No se pudo abrir la ventana de espectáculos");
-	    }
-	}
-
-	 * */
 	
 	@FXML
 	private void abrirEspectaculos(ActionEvent event) {
-	    stageManager.switchScene(FxmlView.ESPECTACULOS);
+		stageManager.switchScene(FxmlView.ESPECTACULOS);
+	}
+	
+	@FXML
+	private void abrirArtistas(ActionEvent event) {
+	    stageManager.switchScene(FxmlView.ARTISTA);
 	}
 
-	
+
 	private void saveAlert(Persona user) {
 
 		Alert alert = new Alert(AlertType.INFORMATION);
@@ -465,7 +465,6 @@ public class UserController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-		
 		tipoPersona.setItems(roles);
 
 		userTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -629,14 +628,11 @@ public class UserController implements Initializable {
 		}
 		alert.showAndWait();
 	}
-	
+
 	private void mostrarError(String msg) {
-	    Alert a = new Alert(Alert.AlertType.ERROR);
-	    a.setHeaderText("Error");
-	    a.setContentText(msg);
-	    a.showAndWait();
+		Alert a = new Alert(Alert.AlertType.ERROR);
+		a.setHeaderText("Error");
+		a.setContentText(msg);
+		a.showAndWait();
 	}
 }
-
-	
-

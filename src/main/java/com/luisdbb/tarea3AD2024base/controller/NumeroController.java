@@ -2,6 +2,7 @@ package com.luisdbb.tarea3AD2024base.controller;
 
 import java.net.URL;
 import java.util.HashSet;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -12,6 +13,7 @@ import com.luisdbb.tarea3AD2024base.config.StageManager;
 import com.luisdbb.tarea3AD2024base.modelo.Artista;
 import com.luisdbb.tarea3AD2024base.modelo.Espectaculo;
 import com.luisdbb.tarea3AD2024base.modelo.Numero;
+import com.luisdbb.tarea3AD2024base.services.EspectaculoService;
 import com.luisdbb.tarea3AD2024base.services.NumeroService;
 import com.luisdbb.tarea3AD2024base.services.PersonaService;
 import com.luisdbb.tarea3AD2024base.services.SesionService;
@@ -32,6 +34,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.beans.property.SimpleStringProperty;
+import java.util.stream.Collectors;
 
 @Controller
 public class NumeroController implements Initializable {
@@ -46,6 +50,9 @@ public class NumeroController implements Initializable {
 	private TableColumn<Numero, String> colNombre;
 	@FXML
 	private TableColumn<Numero, Double> colDuracion;
+
+	@FXML
+	private TableColumn<Numero, String> colArtistas;
 	@FXML
 	private TextField txtOrden;
 	@FXML
@@ -73,6 +80,9 @@ public class NumeroController implements Initializable {
 
 	@Autowired
 	private PersonaService personaService;
+	
+	@Autowired
+	private EspectaculoService espectaculoService;
 
 	private StageManager stageManager;
 
@@ -93,25 +103,24 @@ public class NumeroController implements Initializable {
 		colOrden.setCellValueFactory(new PropertyValueFactory<>("orden"));
 		colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
 		colDuracion.setCellValueFactory(new PropertyValueFactory<>("duracion"));
-
+		colArtistas.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getArtistasTexto()));
 		cargarNumeros();
 		cargarArtistas();
 
 		listaArtistas.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 		tablaNumeros.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-			 
+
 			if (newVal != null)
 				cargarNumeroEnFormulario(newVal);
 		});
 	}
-	
-
 
 	private void cargarNumeros() {
 		listaNumeros.clear();
 		listaNumeros.addAll(numeroService.findByEspectaculo(espectaculoActual.getId()));
-		tablaNumeros.setItems(listaNumeros);
+		tablaNumeros.setItems(
+				FXCollections.observableArrayList(numeroService.findByEspectaculo(espectaculoActual.getId())));
 	}
 
 	private void cargarArtistas() {
@@ -138,8 +147,6 @@ public class NumeroController implements Initializable {
 		txtNombre.setText(n.getNombre());
 		txtDuracion.setText(String.valueOf(n.getDuracion()));
 
-		
-
 		// Seleccionar artista del numero
 		listaArtistas.getSelectionModel().clearSelection();
 		for (Artista a : n.getArtistas()) {
@@ -150,16 +157,16 @@ public class NumeroController implements Initializable {
 	@FXML
 	private void guardarNumero(ActionEvent event) {
 		try {
-		
+
 			Set<Artista> artistasSeleccionados = new HashSet<>(listaArtistas.getSelectionModel().getSelectedItems());
-			 System.out.println("Artistas seleccionados: " + artistasSeleccionados.size());
-			
+			System.out.println("Artistas seleccionados: " + artistasSeleccionados.size());
+
 			validar();
-			
-			 if (artistasSeleccionados.isEmpty()) {
-		            throw new Exception("Debe asignar al menos un artista");
-		        }
-			
+
+			if (artistasSeleccionados.isEmpty()) {
+				throw new Exception("Debe asignar al menos un artista");
+			}
+
 			Numero n = numeroEditando != null ? numeroEditando : new Numero();
 			n.setNombre(txtNombre.getText().trim());
 			n.setOrden(Integer.parseInt(txtOrden.getText().trim()));
@@ -171,7 +178,6 @@ public class NumeroController implements Initializable {
 
 			n = numeroService.guardar(n);
 
-			
 			n.getArtistas().clear();
 			n.getArtistas().addAll(artistasSeleccionados);
 
@@ -185,7 +191,7 @@ public class NumeroController implements Initializable {
 		} catch (Exception e) {
 			mostrarError(e.getMessage());
 		}
-		
+
 	}
 
 	@FXML
@@ -199,6 +205,12 @@ public class NumeroController implements Initializable {
 			mostrarError("Selecciona un número primero");
 			return;
 		}
+
+		List<Numero> numerosActuales = numeroService.findByEspectaculo(espectaculoActual.getId());
+		if (numerosActuales.size() <= 3) {
+			mostrarError("Un espectáculo debe tener al menos 3 números");
+			return;
+		}
 		numeroService.eliminar(numeroEditando.getId());
 		limpiar();
 		cargarNumeros();
@@ -206,8 +218,15 @@ public class NumeroController implements Initializable {
 
 	@FXML
 	private void volver(ActionEvent event) {
-		stageManager.switchScene(FxmlView.ESPECTACULOS);
+		try {
+			espectaculoService.validarMinimoNumeros(espectaculoActual);
+			stageManager.switchScene(FxmlView.ESPECTACULOS);
+		} catch (Exception e) {
+			mostrarError(e.getMessage());
+		}
 	}
+
+	
 
 	private double parseDuracion(String texto) {
 		// Acepta tanto punto como coma decimal
@@ -230,7 +249,7 @@ public class NumeroController implements Initializable {
 		if (txtNombre.getText().isBlank() || txtOrden.getText().isBlank() || txtDuracion.getText().isBlank()) {
 			throw new RuntimeException("Todos los campos son obligatorios");
 		}
-		
+
 		try {
 			Integer.parseInt(txtOrden.getText().trim());
 		} catch (NumberFormatException e) {
@@ -251,9 +270,9 @@ public class NumeroController implements Initializable {
 	private void mostrarError(String msg) {
 		Alert alert = new Alert(Alert.AlertType.ERROR);
 		alert.setTitle("Error");
-	    alert.setHeaderText("Ha ocurrido un error");
-	    alert.setContentText(msg);
-	    alert.showAndWait();
+		alert.setHeaderText("Ha ocurrido un error");
+		alert.setContentText(msg);
+		alert.showAndWait();
 	}
 
 	private void mostrarInfo(String msg) {

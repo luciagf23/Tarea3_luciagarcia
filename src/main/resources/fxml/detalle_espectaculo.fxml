@@ -5,55 +5,73 @@
 <?import javafx.scene.layout.*?>
 
 <BorderPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.luisdbb.tarea3AD2024base.controller.DetalleEspectaculoController">
+	xmlns:fx="http://javafx.com/fxml"
+	fx:controller="com.luisdbb.tarea3AD2024base.controller.DetalleEspectaculoController">
 
-    <!-- CABECERA: Datos del espectáculo -->
-    <top>
-        <VBox spacing="10" padding="15">
-            <Label text="Detalle del Espectáculo" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+	<!-- CABECERA: Datos del espectáculo -->
+	<top>
+		<VBox spacing="10">
+			<padding>
+				<Insets top="15" right="15" bottom="15" left="15" />
+			</padding>
 
-            <GridPane hgap="10" vgap="10">
-                <columnConstraints>
-                    <ColumnConstraints halignment="RIGHT" prefWidth="120"/>
-                    <ColumnConstraints prefWidth="250"/>
-                </columnConstraints>
+			<Label text="Detalle del Espectáculo"
+				style="-fx-font-size: 20px; -fx-font-weight: bold;" />
 
-                <Label text="Nombre:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                <Label fx:id="lblNombre" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+			<GridPane hgap="10" vgap="10">
+				<columnConstraints>
+					<ColumnConstraints halignment="RIGHT"
+						prefWidth="120" />
+					<ColumnConstraints prefWidth="250" />
+				</columnConstraints>
 
-                <Label text="Fecha inicio:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                <Label fx:id="lblFechaInicio" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+				<Label text="Nombre:" GridPane.rowIndex="0"
+					GridPane.columnIndex="0" />
+				<Label fx:id="lblNombre" GridPane.rowIndex="0"
+					GridPane.columnIndex="1" />
 
-                <Label text="Fecha fin:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                <Label fx:id="lblFechaFin" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+				<Label text="Fecha inicio:" GridPane.rowIndex="1"
+					GridPane.columnIndex="0" />
+				<Label fx:id="lblFechaInicio" GridPane.rowIndex="1"
+					GridPane.columnIndex="1" />
 
-                <Label text="Coordinador:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-                <Label fx:id="lblCoordinador" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
-            </GridPane>
-        </VBox>
-    </top>
+				<Label text="Fecha fin:" GridPane.rowIndex="2"
+					GridPane.columnIndex="0" />
+				<Label fx:id="lblFechaFin" GridPane.rowIndex="2"
+					GridPane.columnIndex="1" />
 
-    <!-- CENTRO: Tabla de números -->
-    <center>
-        <VBox spacing="10" padding="15">
-            <Label text="Números del espectáculo" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+				<Label text="Coordinador:" GridPane.rowIndex="3"
+					GridPane.columnIndex="0" />
+				<Label fx:id="lblCoordinador" GridPane.rowIndex="3"
+					GridPane.columnIndex="1" />
+			</GridPane>
+		</VBox>
+	</top>
 
-            <TableView fx:id="tablaNumeros" prefHeight="300">
-                <columns>
-                    <TableColumn fx:id="colOrden" text="Orden" prefWidth="80"/>
-                    <TableColumn fx:id="colEspecialidad" text="Especialidad" prefWidth="150"/>
-                    <TableColumn fx:id="colDuracion" text="Duración" prefWidth="100"/>
-                </columns>
-            </TableView>
+	<!-- CENTRO: Tabla de números -->
+	<center>
+		<VBox spacing="10">
+			<padding>
+				<Insets top="15" right="15" bottom="15" left="15" />
+			</padding>
 
-            <HBox spacing="10" alignment="CENTER_RIGHT">
-                <Button fx:id="btnAgregarNumero" text="Añadir número" onAction="#onAgregarNumero"/>
-                <Button fx:id="btnEditarNumero" text="Editar número" onAction="#onEditarNumero"/>
-                <Button fx:id="btnEliminarNumero" text="Eliminar número" onAction="#onEliminarNumero"/>
-            </HBox>
-        </VBox>
-    </center>
+			<Label text="Números del espectáculo"
+				style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+
+			<TableView fx:id="tablaNumeros" prefHeight="300">
+				<columns>
+					<TableColumn fx:id="colOrden" text="Orden"
+						prefWidth="80" />
+					<TableColumn fx:id="colDuracion" text="Duración"
+						prefWidth="100" />
+					<TableColumn fx:id="colArtistas" text="Artistas"
+						prefWidth="200" />
+
+				</columns>
+			</TableView>
+
+		</VBox>
+	</center>
 
 </BorderPane>
 
