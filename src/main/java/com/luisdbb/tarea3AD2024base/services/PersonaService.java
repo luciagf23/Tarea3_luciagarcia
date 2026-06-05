@@ -28,6 +28,7 @@ public class PersonaService {
 	public List<Artista> findAllArtistas() {
 		return artistaRepository.findAll();
 	}
+	
 
 	public Persona guardar(Persona persona) {
 
@@ -57,7 +58,7 @@ public class PersonaService {
 	}
 
 	public List<Persona> findAll() {
-		return personaRepository.findAll();
+		 return personaRepository.findAllWithEspecialidades();
 	}
 
 	public void deleteInBatch(List<Persona> personas) {

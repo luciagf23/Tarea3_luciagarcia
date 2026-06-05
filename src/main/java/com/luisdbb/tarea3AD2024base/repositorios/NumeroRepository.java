@@ -45,4 +45,6 @@ public interface NumeroRepository extends JpaRepository<Numero, Long> {
 	boolean existsByEspectaculoAndOrdenAndIdNot(Espectaculo espectaculo, Integer orden, Long id);
 
 	long countByEspectaculoId(Long espectaculoId);
+	
+	List<Numero> findByArtistasId(Long artistaId);
 }

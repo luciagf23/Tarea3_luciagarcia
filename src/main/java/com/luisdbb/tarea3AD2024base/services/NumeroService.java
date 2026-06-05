@@ -32,6 +32,10 @@ public class NumeroService {
 		return numeroRepository.findByIdConArtistas(id);
 	}
 
+	public List<Numero> findByArtista(Long artistaId) {
+		return numeroRepository.findByArtistasId(artistaId);
+	}
+
 	public void eliminar(Long id) {
 		numeroRepository.deleteById(id);
 	}

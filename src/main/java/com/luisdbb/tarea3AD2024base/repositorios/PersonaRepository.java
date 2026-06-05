@@ -16,6 +16,10 @@ public interface PersonaRepository extends JpaRepository<Persona, Long> {
 	@Query("SELECT p FROM Persona p WHERE TYPE(p) = Coordinacion")
 	List<Coordinacion> findAllCoordinadores();
 
-	
+	@Query("""
+			    SELECT p FROM Persona p
+			    LEFT JOIN FETCH TREAT(p AS Artista).especialidades
+			""")
+	List<Persona> findAllWithEspecialidades();
 
 }

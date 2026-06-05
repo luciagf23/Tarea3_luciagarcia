@@ -11,15 +11,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 
 import com.luisdbb.tarea3AD2024base.config.StageManager;
 import com.luisdbb.tarea3AD2024base.modelo.Artista;
 import com.luisdbb.tarea3AD2024base.modelo.Coordinacion;
 import com.luisdbb.tarea3AD2024base.modelo.Credencial;
+import com.luisdbb.tarea3AD2024base.modelo.Especialidad;
 import com.luisdbb.tarea3AD2024base.modelo.Espectaculo;
 import com.luisdbb.tarea3AD2024base.modelo.Rol;
+import com.luisdbb.tarea3AD2024base.repositorios.ArtistaRepository;
 import com.luisdbb.tarea3AD2024base.repositorios.CredencialRepository;
 import com.luisdbb.tarea3AD2024base.repositorios.PersonaRepository;
 import com.luisdbb.tarea3AD2024base.modelo.Persona;
@@ -117,8 +118,7 @@ public class UserController implements Initializable {
 
 	@FXML
 	private Button btnDetalles;
-	
-	
+
 	@FXML
 	private TableView<Persona> userTable;
 
@@ -139,7 +139,7 @@ public class UserController implements Initializable {
 
 	@FXML
 	private TableColumn<Persona, Boolean> colEdit;
-	
+
 	@FXML
 	private TableView<Espectaculo> tablaEspectaculos;
 
@@ -159,9 +159,9 @@ public class UserController implements Initializable {
 
 	@Autowired
 	private PersonaRepository personaRepository;
-
+	
 	@Autowired
-	private CredencialService credencialService;
+	private ArtistaRepository artistaRepository;
 
 	private ObservableList<Persona> userList = FXCollections.observableArrayList();
 	private ObservableList<String> roles = FXCollections.observableArrayList("Artista", "Coordinacion");
@@ -209,8 +209,17 @@ public class UserController implements Initializable {
 			password.setText(credencial.getPassword());
 		}
 
-		if (persona instanceof Artista a) {
+		if (persona instanceof Artista ) {
 
+			Artista a= artistaRepository.findById(persona.getId()).orElseThrow();
+			personaEditando = a;
+			    
+			chkAcrobacia.setSelected(false);
+			chkHumor.setSelected(false);
+			chkMagia.setSelected(false);
+			chkEquilibrismo.setSelected(false);
+			chkMalabarismo.setSelected(false);
+			
 			tipoPersona.setValue("Artista");
 
 			camposArtista.setVisible(true);
@@ -221,8 +230,15 @@ public class UserController implements Initializable {
 
 			apodo.setText(a.getApodo());
 
-			
-		} else if (persona instanceof Coordinacion c) {
+			chkAcrobacia.setSelected(a.getEspecialidades().contains(Especialidad.ACROBACIA));
+			chkHumor.setSelected(a.getEspecialidades().contains(Especialidad.HUMOR));
+			chkMagia.setSelected(a.getEspecialidades().contains(Especialidad.MAGIA));
+			chkEquilibrismo.setSelected(a.getEspecialidades().contains(Especialidad.EQUILIBRISMO));
+			chkMalabarismo.setSelected(a.getEspecialidades().contains(Especialidad.MALABARISMO));
+
+		} else if (persona instanceof
+
+		Coordinacion c) {
 
 			tipoPersona.setValue("Coordinacion");
 
@@ -270,7 +286,19 @@ public class UserController implements Initializable {
 					artista.setApodo(null);
 				}
 
-				
+				Set<Especialidad> especialidades = new HashSet<>();
+				if (chkAcrobacia.isSelected())
+					especialidades.add(Especialidad.ACROBACIA);
+				if (chkHumor.isSelected())
+					especialidades.add(Especialidad.HUMOR);
+				if (chkMagia.isSelected())
+					especialidades.add(Especialidad.MAGIA);
+				if (chkEquilibrismo.isSelected())
+					especialidades.add(Especialidad.EQUILIBRISMO);
+				if (chkMalabarismo.isSelected())
+					especialidades.add(Especialidad.MALABARISMO);
+				artista.setEspecialidades(especialidades);
+
 				persona = artista;
 
 			} else {
@@ -351,23 +379,22 @@ public class UserController implements Initializable {
 
 		loadUserDetails();
 	}
-	
+
 	@FXML
 	private void onGestionarEspecialidades(ActionEvent event) {
-	    try {
-	        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/especialidad.fxml"));
-	        Parent root = loader.load();
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/especialidad.fxml"));
+			Parent root = loader.load();
 
-	        Stage stage = new Stage();
-	        stage.setTitle("Gestión de Especialidades");
-	        stage.setScene(new Scene(root));
-	        stage.show();
+			Stage stage = new Stage();
+			stage.setTitle("Gestión de Especialidades");
+			stage.setScene(new Scene(root));
+			stage.show();
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
-
 
 	private void clearFields() {
 		personaEditando = null;
@@ -404,17 +431,15 @@ public class UserController implements Initializable {
 	 * 
 	 */
 
-	
 	@FXML
 	private void abrirEspectaculos(ActionEvent event) {
 		stageManager.switchScene(FxmlView.ESPECTACULOS);
 	}
-	
+
 	@FXML
 	private void abrirArtistas(ActionEvent event) {
-	    stageManager.switchScene(FxmlView.ARTISTA);
+		stageManager.switchScene(FxmlView.ARTISTA);
 	}
-
 
 	private void saveAlert(Persona user) {
 

@@ -76,21 +76,20 @@
 					</children>
 				</HBox>
 
+				
 				<!-- Campos Artista -->
 				<VBox fx:id="camposArtista" visible="false" managed="false"
 					spacing="5.0">
-					<TextField fx:id="apodo" promptText="Apodo (opcional)">
-						<VBox.margin>
-							<Insets left="25.0" right="25.0" />
-						</VBox.margin>
-					</TextField>
-
-					<Label text="Especialidades:" textFill="WHITE">
-						<VBox.margin>
-							<Insets left="25.0" />
-						</VBox.margin>
-					</Label>
-
+					<TextField fx:id="apodo" promptText="Apodo (opcional)" />
+					<Label text="Especialidades:" textFill="WHITE" />
+					<CheckBox fx:id="chkAcrobacia" text="Acrobacia"
+						textFill="WHITE" />
+					<CheckBox fx:id="chkHumor" text="Humor" textFill="WHITE" />
+					<CheckBox fx:id="chkMagia" text="Magia" textFill="WHITE" />
+					<CheckBox fx:id="chkEquilibrismo" text="Equilibrismo"
+						textFill="WHITE" />
+					<CheckBox fx:id="chkMalabarismo" text="Malabarismo"
+						textFill="WHITE" />
 				</VBox>
 
 				<!-- Campos Coordinación -->

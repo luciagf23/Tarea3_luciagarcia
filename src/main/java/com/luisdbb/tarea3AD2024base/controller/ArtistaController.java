@@ -1,174 +1,87 @@
 package com.luisdbb.tarea3AD2024base.controller;
 
-
-
-import javafx.collections.FXCollections;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import java.net.URL;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import com.luisdbb.tarea3AD2024base.config.StageManager;
 import com.luisdbb.tarea3AD2024base.modelo.Artista;
-import com.luisdbb.tarea3AD2024base.modelo.Especialidad;
-import com.luisdbb.tarea3AD2024base.services.ArtistaService;
-import com.luisdbb.tarea3AD2024base.services.EspecialidadService;
+import com.luisdbb.tarea3AD2024base.modelo.Numero;
+import com.luisdbb.tarea3AD2024base.services.NumeroService;
+import com.luisdbb.tarea3AD2024base.services.SesionService;
+import com.luisdbb.tarea3AD2024base.view.FxmlView;
 
-import java.net.URL;
-import java.util.HashSet;
-import java.util.ResourceBundle;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.event.ActionEvent;
 
 @Controller
 public class ArtistaController implements Initializable {
 
-    @FXML
-    private TextField txtNombre;
+	@FXML
+	private Label lblNombre;
+	@FXML
+	private Label lblEmail;
+	@FXML
+	private Label lblNacionalidad;
+	@FXML
+	private Label lblApodo;
+	@FXML
+	private Label lblEspecialidades;
 
-    @FXML
-    private TextField txtNacionalidad;
+	@FXML
+	private TableView<Numero> tablaNumeros;
+	@FXML
+	private TableColumn<Numero, String> colEspectaculo;
+	@FXML
+	private TableColumn<Numero, String> colNumero;
 
-    @FXML
-    private TextField txtApodo;
+	@Autowired
+	private SesionService sesionService;
 
-    @FXML
-    private ComboBox<Especialidad> comboEspecialidad;
+	@Autowired
+	private NumeroService numeroService;
 
-    @FXML
-    private ListView<Especialidad> listaEspecialidades;
+	private StageManager stageManager;
 
-    @FXML
-    private TableView<Artista> tablaArtistas;
-
-    @FXML
-    private TableColumn<Artista, Long> colId;
-
-    @FXML
-    private TableColumn<Artista, String> colNombre;
-
-    @FXML
-    private TableColumn<Artista, String> colNacionalidad;
-
-    @FXML
-    private TableColumn<Artista, String> colApodo;
-
-    @Autowired
-    private ArtistaService artistaService;
-
-    @Autowired
-    private EspecialidadService especialidadService;
-
-    private Artista artistaSeleccionado;
-    
-    private StageManager stageManager;
-    
-    public void setStageManager(StageManager stageManager) {
+	public void setStageManager(StageManager stageManager) {
 		this.stageManager = stageManager;
 	}
 
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
+	@Override
+	public void initialize(URL url, ResourceBundle rb) {
+		colEspectaculo
+				.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEspectaculo().getId()
+						+ " - " + cellData.getValue().getEspectaculo().getNombre()));
+		colNumero.setCellValueFactory(cellData -> new SimpleStringProperty(
+				cellData.getValue().getId() + " - " + cellData.getValue().getNombre()));
 
-        // Configurar columnas
-    	colId.setCellValueFactory(new PropertyValueFactory<>("id"));
-    	colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-    	colNacionalidad.setCellValueFactory(new PropertyValueFactory<>("nacionalidad"));
-    	colApodo.setCellValueFactory(new PropertyValueFactory<>("apodo"));
+		cargarFicha();
+	}
 
+	private void cargarFicha() {
+		Artista artista = (Artista) sesionService.getUsuarioActual().getPersona();
 
-        // Cargar artistas
-        cargarTabla();
+		lblNombre.setText(artista.getNombre());
+		lblEmail.setText(artista.getEmail());
+		lblNacionalidad.setText(artista.getNacionalidad());
+		lblApodo.setText(artista.getApodo() != null ? artista.getApodo() : "-");
+		lblEspecialidades
+				.setText(artista.getEspecialidades().stream().map(Enum::name).collect(Collectors.joining(", ")));
 
-        // Cargar especialidades desde BD
-        comboEspecialidad.setItems(
-                FXCollections.observableArrayList(especialidadService.findAll())
-        );
+		tablaNumeros.setItems(FXCollections.observableArrayList(numeroService.findByArtista(artista.getId())));
+	}
 
-        // Selección en tabla
-        tablaArtistas.setOnMouseClicked(e -> {
-            artistaSeleccionado = tablaArtistas.getSelectionModel().getSelectedItem();
-            if (artistaSeleccionado != null) {
-                cargarDatosArtista();
-            }
-        });
-    }
-
-    private void cargarTabla() {
-        tablaArtistas.setItems(
-                FXCollections.observableArrayList(artistaService.findAll())
-        );
-    }
-
-    private void cargarDatosArtista() {
-        txtNombre.setText(artistaSeleccionado.getNombre());
-        txtNacionalidad.setText(artistaSeleccionado.getNacionalidad());
-        txtApodo.setText(artistaSeleccionado.getApodo());
-
-        listaEspecialidades.setItems(
-                FXCollections.observableArrayList(artistaSeleccionado.getEspecialidades())
-        );
-    }
-
-    @FXML
-    private void guardarArtista() {
-
-        if (artistaSeleccionado == null) {
-            artistaSeleccionado = new Artista();
-        }
-
-        artistaSeleccionado.setNombre(txtNombre.getText());
-        artistaSeleccionado.setNacionalidad(txtNacionalidad.getText());
-        artistaSeleccionado.setApodo(txtApodo.getText());
-
-        artistaSeleccionado.setEspecialidades(
-                new HashSet<>(listaEspecialidades.getItems())
-        );
-
-        artistaService.guardar(artistaSeleccionado);
-
-        limpiar();
-        cargarTabla();
-    }
-
-    @FXML
-    private void eliminarArtista() {
-        if (artistaSeleccionado != null) {
-            artistaService.delete(artistaSeleccionado.getId());
-            limpiar();
-            cargarTabla();
-        }
-    }
-
-    @FXML
-    private void limpiar() {
-        txtNombre.clear();
-        txtNacionalidad.clear();
-        txtApodo.clear();
-        comboEspecialidad.getSelectionModel().clearSelection();
-        listaEspecialidades.getItems().clear();
-        tablaArtistas.getSelectionModel().clearSelection();
-        artistaSeleccionado = null;
-    }
-
-    @FXML
-    private void añadirEspecialidad() {
-        Especialidad esp = comboEspecialidad.getValue();
-
-        if (esp != null && !listaEspecialidades.getItems().contains(esp)) {
-            listaEspecialidades.getItems().add(esp);
-        }
-    }
-
-    @FXML
-    private void eliminarEspecialidad() {
-        Especialidad esp = listaEspecialidades.getSelectionModel().getSelectedItem();
-        if (esp != null) {
-            listaEspecialidades.getItems().remove(esp);
-        }
-    }
-
-	
+	@FXML
+	private void volver(ActionEvent event) {
+		stageManager.switchScene(FxmlView.LOGIN);
+	}
 }
-

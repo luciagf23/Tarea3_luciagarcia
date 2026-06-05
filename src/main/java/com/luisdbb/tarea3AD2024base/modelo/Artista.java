@@ -4,11 +4,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 
 @Entity
 @DiscriminatorValue("ARTISTA")
@@ -19,8 +20,8 @@ public class Artista extends Persona {
 	@ManyToMany(mappedBy = "artistas")
 	private Set<Numero> numeros;
 
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "artista_especialidad", joinColumns = @JoinColumn(name = "artista_id"), inverseJoinColumns = @JoinColumn(name = "especialidad_id"))
+	@ElementCollection(fetch = FetchType.EAGER)
+	@Enumerated(EnumType.STRING)
 	private Set<Especialidad> especialidades = new HashSet<>();
 
 	public Artista() {
