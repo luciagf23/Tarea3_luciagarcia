@@ -24,7 +24,6 @@ import com.luisdbb.tarea3AD2024base.repositorios.ArtistaRepository;
 import com.luisdbb.tarea3AD2024base.repositorios.CredencialRepository;
 import com.luisdbb.tarea3AD2024base.repositorios.PersonaRepository;
 import com.luisdbb.tarea3AD2024base.modelo.Persona;
-import com.luisdbb.tarea3AD2024base.services.CredencialService;
 import com.luisdbb.tarea3AD2024base.services.PersonaService;
 import com.luisdbb.tarea3AD2024base.services.RegistroService;
 import com.luisdbb.tarea3AD2024base.view.FxmlView;
@@ -236,9 +235,7 @@ public class UserController implements Initializable {
 			chkEquilibrismo.setSelected(a.getEspecialidades().contains(Especialidad.EQUILIBRISMO));
 			chkMalabarismo.setSelected(a.getEspecialidades().contains(Especialidad.MALABARISMO));
 
-		} else if (persona instanceof
-
-		Coordinacion c) {
+		} else if (persona instanceof Coordinacion c) {
 
 			tipoPersona.setValue("Coordinacion");
 
@@ -606,7 +603,7 @@ public class UserController implements Initializable {
 	 */
 	private void loadUserDetails() {
 		userList.clear();
-		userList.addAll(personaService.findAll());
+		userList.addAll(personaRepository.findAllByOrderByIdAsc());
 
 		userTable.setItems(userList);
 	}

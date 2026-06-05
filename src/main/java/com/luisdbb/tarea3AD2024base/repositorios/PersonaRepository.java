@@ -22,4 +22,5 @@ public interface PersonaRepository extends JpaRepository<Persona, Long> {
 			""")
 	List<Persona> findAllWithEspecialidades();
 
+	List<Artista> findAllByOrderByIdAsc();
 }

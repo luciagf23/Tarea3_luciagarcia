@@ -35,9 +35,8 @@ public abstract class Persona {
     	
     }
 
-	public Persona(Long id, String nombre, String email, String nacionalidad) {
+	public Persona(String nombre, String email, String nacionalidad) {
 		super();
-		this.id = id;
 		this.nombre = nombre;
 		this.email = email;
 		this.nacionalidad = nacionalidad;

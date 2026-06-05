@@ -28,8 +28,8 @@ public class Artista extends Persona {
 
 	}
 
-	public Artista(Long id, String nombre, String email, String nacionalidad, String apodo) {
-		super(id, nombre, email, nacionalidad);
+	public Artista(String nombre, String email, String nacionalidad, String apodo) {
+		super(nombre, email, nacionalidad);
 		this.apodo = apodo;
 
 	}
