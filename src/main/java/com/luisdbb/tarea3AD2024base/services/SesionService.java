@@ -1,5 +1,6 @@
 package com.luisdbb.tarea3AD2024base.services;
 
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.luisdbb.tarea3AD2024base.modelo.Artista;
@@ -7,6 +8,7 @@ import com.luisdbb.tarea3AD2024base.modelo.Credencial;
 import com.luisdbb.tarea3AD2024base.modelo.Espectaculo;
 
 @Service
+@Scope("singleton")
 public class SesionService {
 
 	private Credencial usuarioActual;

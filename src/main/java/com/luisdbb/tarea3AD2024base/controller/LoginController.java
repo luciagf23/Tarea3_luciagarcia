@@ -61,12 +61,13 @@ public class LoginController implements Initializable {
 	private void login(ActionEvent event) {
 		try {
 			if (userService.authenticate(getUsername(), getPassword())) {
+				Credencial credencial = credencialService.findByUsername(getUsername());
+				
+				sesionService.setUsuarioActual(credencial);
 
 				if (getUsername().equals("admin")) {
 					stageManager.switchScene(FxmlView.USER);
 				} else {
-					Credencial credencial = credencialService.findByUsername(getUsername());
-					sesionService.setUsuarioActual(credencial);
 
 					if (credencial.getRol() == Rol.ARTISTA) {
 						stageManager.switchScene(FxmlView.FICHAARTISTA);

@@ -1,12 +1,13 @@
 package com.luisdbb.tarea3AD2024base.modelo;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,18 +32,21 @@ public class Espectaculo {
 	@ManyToOne
 	private Coordinacion coordinador;
 
-	@OneToMany(mappedBy = "espectaculo", cascade = CascadeType.ALL, orphanRemoval = true // si eliminas numero lista se
-	// elimina bbdd
-	)
-	@OrderBy("orden ASC")
-	private List<Numero> numeros = new ArrayList<>();
+	/*
+	 * @OneToMany(mappedBy = "espectaculo", cascade = CascadeType.ALL, orphanRemoval
+	 * = true // si eliminas numero lista se // elimina bbdd )
+	 * 
+	 * @OrderBy("orden ASC") private List<Numero> numeros = new ArrayList<>();
+	 */
+	@OneToMany(mappedBy = "espectaculo", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private Set<Numero> numeros = new HashSet<>();
 
 	public Espectaculo() {
 
 	}
 
 	public Espectaculo(Long id, String nombre, LocalDate fechaInicio, LocalDate fechaFin, Coordinacion coordinador,
-			List<Numero> numeros) {
+			Set<Numero> numeros) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
@@ -92,11 +96,11 @@ public class Espectaculo {
 		this.coordinador = coordinador;
 	}
 
-	public List<Numero> getNumeros() {
+	public Set<Numero> getNumeros() {
 		return numeros;
 	}
 
-	public void setNumeros(List<Numero> numeros) {
+	public void setNumeros(Set<Numero> numeros) {
 		this.numeros = numeros;
 	}
 

@@ -13,10 +13,10 @@ public class LogOperacionService {
 
     public void registrar(String usuario, TipoOperacion tipo, String resumen) {
         LogOperacion log = new LogOperacion();
-        log.setId(System.currentTimeMillis()); // ID simple
-        log.setFechaHora(LocalDateTime.now());
+        log.setId(System.currentTimeMillis()); 
+        log.setFechaHora(LocalDateTime.now().toString());
         log.setUsuario(usuario);
-        log.setTipoOperacion(tipo);
+        log.setTipoOperacion(tipo.name());
         log.setResumen(resumen);
 
         repo.guardar(log);

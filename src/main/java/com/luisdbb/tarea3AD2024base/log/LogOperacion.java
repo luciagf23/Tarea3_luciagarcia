@@ -1,19 +1,25 @@
 package com.luisdbb.tarea3AD2024base.log;
 
-import java.time.LocalDateTime;
-
 public class LogOperacion {
 
 	private Long id;
-    private LocalDateTime fechaHora;
-    private String usuario;
-    private TipoOperacion tipoOperacion;
-    private String resumen;
+	private String fechaHora;
+	private String usuario;
+	private String tipoOperacion;
+	private String resumen;
 
-    public LogOperacion() {
-    	
-    	
-    }
+	public LogOperacion() {
+
+	}
+
+	public LogOperacion(Long id, String fechaHora, String usuario, String tipoOperacion, String resumen) {
+		super();
+		this.id = id;
+		this.fechaHora = fechaHora;
+		this.usuario = usuario;
+		this.tipoOperacion = tipoOperacion;
+		this.resumen = resumen;
+	}
 
 	public Long getId() {
 		return id;
@@ -23,11 +29,11 @@ public class LogOperacion {
 		this.id = id;
 	}
 
-	public LocalDateTime getFechaHora() {
+	public String getFechaHora() {
 		return fechaHora;
 	}
 
-	public void setFechaHora(LocalDateTime fechaHora) {
+	public void setFechaHora(String fechaHora) {
 		this.fechaHora = fechaHora;
 	}
 
@@ -39,11 +45,11 @@ public class LogOperacion {
 		this.usuario = usuario;
 	}
 
-	public TipoOperacion getTipoOperacion() {
+	public String getTipoOperacion() {
 		return tipoOperacion;
 	}
 
-	public void setTipoOperacion(TipoOperacion tipoOperacion) {
+	public void setTipoOperacion(String tipoOperacion) {
 		this.tipoOperacion = tipoOperacion;
 	}
 
@@ -54,7 +60,5 @@ public class LogOperacion {
 	public void setResumen(String resumen) {
 		this.resumen = resumen;
 	}
-    
-    
-    
+
 }

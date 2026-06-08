@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import com.luisdbb.tarea3AD2024base.config.StageManager;
 import com.luisdbb.tarea3AD2024base.modelo.Espectaculo;
 import com.luisdbb.tarea3AD2024base.services.EspectaculoService;
+import com.luisdbb.tarea3AD2024base.services.SesionService;
 import com.luisdbb.tarea3AD2024base.view.FxmlView;
 
 import javafx.collections.FXCollections;
@@ -38,6 +39,9 @@ public class InvitadoController implements Initializable {
 
 	@Autowired
 	private EspectaculoService espectaculoService;
+
+	@Autowired
+	private SesionService sesionService;
 
 	@Lazy
 	@Autowired

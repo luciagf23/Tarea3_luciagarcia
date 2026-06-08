@@ -6,8 +6,12 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+
 import com.luisdbb.tarea3AD2024base.modelo.Espectaculo;
 import com.luisdbb.tarea3AD2024base.modelo.Numero;
+import com.luisdbb.tarea3AD2024base.services.SesionService;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -19,6 +23,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+@Controller
 public class DetalleEspectaculoController implements Initializable {
 
 	@FXML
@@ -49,6 +54,9 @@ public class DetalleEspectaculoController implements Initializable {
 	private TableColumn<Numero, Double> colDuracion;
 
 	private Espectaculo espectaculo;
+
+	@Autowired
+	private SesionService sesionService;
 
 	public DetalleEspectaculoController() {
 
@@ -81,9 +89,10 @@ public class DetalleEspectaculoController implements Initializable {
 	}
 
 	private void cargarNumeros() {
-		List<Numero> numerosOrdenados = espectaculo.getNumeros().stream()
+		List<Numero> numerosOrdenados = espectaculo.getNumeros().stream().distinct()
 				.sorted(Comparator.comparingInt(Numero::getOrden)).toList();
-		tablaNumeros.setItems(FXCollections.observableArrayList(espectaculo.getNumeros()));
+
+		tablaNumeros.setItems(FXCollections.observableArrayList(numerosOrdenados));
 	}
 
 	private void mostrarInfo(String msg) {

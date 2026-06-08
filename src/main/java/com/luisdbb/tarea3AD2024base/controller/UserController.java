@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import com.luisdbb.tarea3AD2024base.config.SpringFXMLLoader;
 import com.luisdbb.tarea3AD2024base.config.StageManager;
 import com.luisdbb.tarea3AD2024base.log.LogOperacionService;
 import com.luisdbb.tarea3AD2024base.log.TipoOperacion;
@@ -171,6 +172,9 @@ public class UserController implements Initializable {
 
 	@Autowired
 	private LogOperacionService logService;
+
+	@Autowired
+	private SpringFXMLLoader springFXMLLoader;
 
 	@Autowired
 	private NumeroRepository numeroRepository;
@@ -335,7 +339,7 @@ public class UserController implements Initializable {
 
 			// Validación de duplicados si cambian
 			if (esEdicion) {
-				if (!credencial.getUsername().equalsIgnoreCase(nuevoUsername)) {
+				if (credencial.getUsername() != null && !credencial.getUsername().equalsIgnoreCase(nuevoUsername)) {
 					if (credencialRepository.existsByUsername(nuevoUsername.toLowerCase())) {
 						throw new RuntimeException("El username ya existe");
 					}
@@ -343,7 +347,8 @@ public class UserController implements Initializable {
 			}
 
 			if (esEdicion) {
-				if (!personaEditando.getEmail().equalsIgnoreCase(persona.getEmail())) {
+				if (personaEditando.getEmail() != null
+						&& !personaEditando.getEmail().equalsIgnoreCase(persona.getEmail())) {
 					if (personaRepository.existsByEmail(persona.getEmail().toLowerCase())) {
 						throw new RuntimeException("El email ya existe");
 					}
@@ -361,16 +366,12 @@ public class UserController implements Initializable {
 			// Guardar
 			Persona guardada = registroService.registrarPersona(persona, credencial);
 
-			// Log
-			logService.registrar(sesionService.getUsuarioActual().getUsername(),
-					esEdicion ? TipoOperacion.ACTUALIZACION : TipoOperacion.NUEVO,
-					"Persona " + (esEdicion ? "modificada" : "creada") + ": id=" + guardada.getId() + ", email="
-							+ guardada.getEmail());
+			String usuario = (sesionService.getUsuarioActual() != null) ? sesionService.getUsuarioActual().getUsername()
+					: "INVITADO";
 
 			// Log
-			logService.registrar(sesionService.getUsuarioActual().getUsername(),
-					esEdicion ? TipoOperacion.ACTUALIZACION : TipoOperacion.NUEVO,
-					"Persona " + (esEdicion ? "modificada" : "creada") + ": id=" + getId() + ", email="
+			logService.registrar(usuario, esEdicion ? TipoOperacion.ACTUALIZACION : TipoOperacion.NUEVO,
+					"Persona " + (esEdicion ? "modificada" : "creada") + ": id=" + guardada.getId() + ", email="
 							+ guardada.getEmail());
 
 			// Reset
@@ -391,7 +392,26 @@ public class UserController implements Initializable {
 
 	@FXML
 	private void deleteUsers(ActionEvent event) {
+
 		List<Persona> personas = userTable.getSelectionModel().getSelectedItems();
+
+		if (personas == null || personas.isEmpty()) {
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setContentText("Seleccione al menos un usuario");
+			alert.showAndWait();
+			return;
+		}
+
+		// evitar borrar artistas con números asignados
+		for (Persona p : personas) {
+			if (p instanceof Artista a){
+				if (!numeroRepository.findByArtistasId(a.getId()).isEmpty()) {
+	                mostrarError("No se puede eliminar al artista '" + a.getNombre() +
+	                             "' porque tiene números asignados.");
+	                return;
+	            }
+			}
+		}
 
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Confirmation Dialog");
@@ -401,13 +421,24 @@ public class UserController implements Initializable {
 
 		if (action.get() == ButtonType.OK) {
 
-			// Log
-			for (Persona p : personas) {
-				logService.registrar(sesionService.getUsuarioActual().getUsername(), TipoOperacion.BORRADO,
-						"Persona eliminada: id=" + p.getId() + ", email=" + p.getEmail());
+			String usuario = (sesionService.getUsuarioActual() != null) ? sesionService.getUsuarioActual().getUsername()
+					: "INVITADO";
 
+			for (Persona p : personas) {
+				String usernamePersona = (p.getCredencial() != null ? p.getCredencial().getUsername()
+						: "SIN_CREDENCIAL");
+
+				logService.registrar(usuario, TipoOperacion.BORRADO, "Persona eliminada: id=" + p.getId() + ", email="
+						+ p.getEmail() + ", username=" + usernamePersona);
 			}
-			personaService.deleteInBatch(personas);
+
+			try {
+				personaService.deleteInBatch(personas);
+			} catch (Exception e) {
+				Alert a = new Alert(Alert.AlertType.ERROR);
+				a.setContentText("No se pudo eliminar. El usuario tiene relaciones asociadas.");
+				a.showAndWait();
+			}
 		}
 
 		loadUserDetails();
@@ -416,7 +447,10 @@ public class UserController implements Initializable {
 	@FXML
 	private void onGestionarEspecialidades(ActionEvent event) {
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/especialidad.fxml"));
+			FXMLLoader loader = new FXMLLoader();
+			loader.setControllerFactory(springFXMLLoader.getContext()::getBean);
+			loader.setLocation(getClass().getResource("/fxml/especialidad.fxml"));
+
 			Parent root = loader.load();
 
 			Stage stage = new Stage();
@@ -596,43 +630,15 @@ public class UserController implements Initializable {
 		colEdit.setCellFactory(cellFactory);
 	}
 
-	Callback<TableColumn<Persona, Boolean>, TableCell<Persona, Boolean>> cellFactory = new Callback<TableColumn<Persona, Boolean>, TableCell<Persona, Boolean>>() {
-		@Override
-		public TableCell<Persona, Boolean> call(final TableColumn<Persona, Boolean> param) {
-			final TableCell<Persona, Boolean> cell = new TableCell<Persona, Boolean>() {
-				Image imgEdit = new Image(getClass().getResourceAsStream("/images/edit.png"));
-				final Button btnEdit = new Button();
+	Callback<TableColumn<Persona, Boolean>, TableCell<Persona, Boolean>> cellFactory=new Callback<TableColumn<Persona,Boolean>,TableCell<Persona,Boolean>>(){@Override public TableCell<Persona,Boolean>call(final TableColumn<Persona,Boolean>param){final TableCell<Persona,Boolean>cell=new TableCell<Persona,Boolean>(){Image imgEdit=new Image(getClass().getResourceAsStream("/images/edit.png"));final Button btnEdit=new Button();
 
-				@Override
-				public void updateItem(Boolean check, boolean empty) {
-					super.updateItem(check, empty);
-					if (empty) {
-						setGraphic(null);
-						setText(null);
-					} else {
-						btnEdit.setOnAction(e -> {
-							Persona user = getTableView().getItems().get(getIndex());
-							cargarPersonaEnFormulario(user);
-						});
+	@Override public void updateItem(Boolean check,boolean empty){super.updateItem(check,empty);if(empty){setGraphic(null);setText(null);}else{btnEdit.setOnAction(e->{Persona user=getTableView().getItems().get(getIndex());cargarPersonaEnFormulario(user);});
 
-						btnEdit.setStyle("-fx-background-color: transparent;");
-						ImageView iv = new ImageView();
-						iv.setImage(imgEdit);
-						iv.setPreserveRatio(true);
-						iv.setSmooth(true);
-						iv.setCache(true);
-						btnEdit.setGraphic(iv);
+	btnEdit.setStyle("-fx-background-color: transparent;");ImageView iv=new ImageView();iv.setImage(imgEdit);iv.setPreserveRatio(true);iv.setSmooth(true);iv.setCache(true);btnEdit.setGraphic(iv);
 
-						setGraphic(btnEdit);
-						setAlignment(Pos.CENTER);
-						setText(null);
-					}
-				}
+	setGraphic(btnEdit);setAlignment(Pos.CENTER);setText(null);}}
 
-			};
-			return cell;
-		}
-	};
+	};return cell;}};
 
 	/*
 	 * Add All users to observable list and update table

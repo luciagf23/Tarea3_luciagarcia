@@ -194,6 +194,8 @@ public class NumeroController implements Initializable {
 			n.setDuracion(duracion);
 			n.setEspectaculo(espectaculoActual);
 
+			n = numeroService.guardar(n);
+
 			if (n.getArtistas() == null) {
 				n.setArtistas(new HashSet<>());
 			}
@@ -211,14 +213,16 @@ public class NumeroController implements Initializable {
 					n.getArtistas().add(a);
 				}
 			}
-
+			
+			//Guardar de nuevo
 			n = numeroService.guardar(n);
 
 			// Registro del log
-			logService.registrar(sesionService.getUsuarioActual().getUsername(),
-					numeroEditando == null ? TipoOperacion.NUEVO : TipoOperacion.ACTUALIZACION,
-					"Número guardado: id=" + n.getId() + ", nombre=" + n.getNombre());
+			String usuario = (sesionService.getUsuarioActual() != null) ? sesionService.getUsuarioActual().getUsername()
+					: "INVITADO";
 
+			logService.registrar(usuario, numeroEditando == null ? TipoOperacion.NUEVO : TipoOperacion.ACTUALIZACION,
+					"Número guardado: id=" + n.getId() + ", nombre=" + n.getNombre());
 			numeroEditando = n;
 
 			limpiar();

@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import com.luisdbb.tarea3AD2024base.config.SpringFXMLLoader;
 import com.luisdbb.tarea3AD2024base.config.StageManager;
 import com.luisdbb.tarea3AD2024base.log.LogOperacionService;
 import com.luisdbb.tarea3AD2024base.log.TipoOperacion;
@@ -96,6 +97,9 @@ public class EspectaculoController implements Initializable {
 
 	@Autowired
 	private LogOperacionService logService;
+	
+	@Autowired
+	private SpringFXMLLoader springFXMLLoader;
 
 	public EspectaculoController() {
 
@@ -253,9 +257,10 @@ public class EspectaculoController implements Initializable {
 			Espectaculo e = construirEspectaculoDesdeFormulario();
 			espectaculoService.guardar(e);
 
-			// REGISTRO DEL LOG
-			logService.registrar(sesionService.getUsuarioActual().getUsername(),
-					e.getId() == null ? TipoOperacion.NUEVO : TipoOperacion.ACTUALIZACION,
+			String usuario = (sesionService.getUsuarioActual() != null) ? sesionService.getUsuarioActual().getUsername()
+					: "INVITADO";
+			// Log
+			logService.registrar(usuario, e.getId() == null ? TipoOperacion.NUEVO : TipoOperacion.ACTUALIZACION,
 					"Espectáculo guardado: id=" + e.getId() + ", nombre=" + e.getNombre());
 
 			mostrarInfo("Espectaculo guardado correctamente");
@@ -278,12 +283,14 @@ public class EspectaculoController implements Initializable {
 
 		try {
 
-			// Resgistro del log
-			logService.registrar(sesionService.getUsuarioActual().getUsername(), TipoOperacion.BORRADO,
+			String usuario = (sesionService.getUsuarioActual() != null) ? sesionService.getUsuarioActual().getUsername()
+					: "INVITADO";
+
+			logService.registrar(usuario, TipoOperacion.BORRADO,
 					"Espectáculo eliminado: id=" + seleccionado.getId() + ", nombre=" + seleccionado.getNombre());
 
 			espectaculoService.eliminar(seleccionado.getId());
-			
+
 			mostrarInfo("Eliminado correctamente");
 			cargarTablaEspectaculos();
 			limpiarFormulario();
@@ -315,7 +322,10 @@ public class EspectaculoController implements Initializable {
 		Espectaculo completo = espectaculoService.cargarEspectaculoCompleto(seleccionado.getId());
 
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/detalle_espectaculo.fxml"));
+			FXMLLoader loader = new FXMLLoader();
+			loader.setControllerFactory(springFXMLLoader.getContext()::getBean);
+			loader.setLocation(getClass().getResource("/fxml/detalle_espectaculo.fxml"));
+
 			Parent root = loader.load();
 
 			DetalleEspectaculoController controller = loader.getController();
