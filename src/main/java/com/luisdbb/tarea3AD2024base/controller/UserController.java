@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import com.luisdbb.tarea3AD2024base.config.StageManager;
+import com.luisdbb.tarea3AD2024base.log.LogOperacionService;
+import com.luisdbb.tarea3AD2024base.log.TipoOperacion;
 import com.luisdbb.tarea3AD2024base.modelo.Artista;
 import com.luisdbb.tarea3AD2024base.modelo.Coordinacion;
 import com.luisdbb.tarea3AD2024base.modelo.Credencial;
@@ -166,6 +168,9 @@ public class UserController implements Initializable {
 
 	@Autowired
 	private SesionService sesionService;
+
+	@Autowired
+	private LogOperacionService logService;
 
 	@Autowired
 	private NumeroRepository numeroRepository;
@@ -351,7 +356,22 @@ public class UserController implements Initializable {
 			credencial.setPersona(persona);
 
 			// Guardar
-			registroService.registrarPersona(persona, credencial);
+			// registroService.registrarPersona(persona, credencial);
+
+			// Guardar
+			Persona guardada = registroService.registrarPersona(persona, credencial);
+
+			// Log
+			logService.registrar(sesionService.getUsuarioActual().getUsername(),
+					esEdicion ? TipoOperacion.ACTUALIZACION : TipoOperacion.NUEVO,
+					"Persona " + (esEdicion ? "modificada" : "creada") + ": id=" + guardada.getId() + ", email="
+							+ guardada.getEmail());
+
+			// Log
+			logService.registrar(sesionService.getUsuarioActual().getUsername(),
+					esEdicion ? TipoOperacion.ACTUALIZACION : TipoOperacion.NUEVO,
+					"Persona " + (esEdicion ? "modificada" : "creada") + ": id=" + getId() + ", email="
+							+ guardada.getEmail());
 
 			// Reset
 			personaEditando = null;
@@ -379,8 +399,16 @@ public class UserController implements Initializable {
 		alert.setContentText("Are you sure you want to delete selected?");
 		Optional<ButtonType> action = alert.showAndWait();
 
-		if (action.get() == ButtonType.OK)
+		if (action.get() == ButtonType.OK) {
+
+			// Log
+			for (Persona p : personas) {
+				logService.registrar(sesionService.getUsuarioActual().getUsername(), TipoOperacion.BORRADO,
+						"Persona eliminada: id=" + p.getId() + ", email=" + p.getEmail());
+
+			}
 			personaService.deleteInBatch(personas);
+		}
 
 		loadUserDetails();
 	}
@@ -401,7 +429,6 @@ public class UserController implements Initializable {
 		}
 	}
 
-	
 	private void clearFields() {
 		personaEditando = null;
 		nombre.clear();

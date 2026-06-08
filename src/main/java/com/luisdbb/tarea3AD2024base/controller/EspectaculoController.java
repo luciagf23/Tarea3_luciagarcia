@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import com.luisdbb.tarea3AD2024base.config.StageManager;
+import com.luisdbb.tarea3AD2024base.log.LogOperacionService;
+import com.luisdbb.tarea3AD2024base.log.TipoOperacion;
 import com.luisdbb.tarea3AD2024base.modelo.Coordinacion;
 import com.luisdbb.tarea3AD2024base.modelo.Espectaculo;
 import com.luisdbb.tarea3AD2024base.services.EspectaculoService;
@@ -91,6 +93,9 @@ public class EspectaculoController implements Initializable {
 
 	@Autowired
 	private SesionService sesionService;
+
+	@Autowired
+	private LogOperacionService logService;
 
 	public EspectaculoController() {
 
@@ -248,6 +253,11 @@ public class EspectaculoController implements Initializable {
 			Espectaculo e = construirEspectaculoDesdeFormulario();
 			espectaculoService.guardar(e);
 
+			// REGISTRO DEL LOG
+			logService.registrar(sesionService.getUsuarioActual().getUsername(),
+					e.getId() == null ? TipoOperacion.NUEVO : TipoOperacion.ACTUALIZACION,
+					"Espectáculo guardado: id=" + e.getId() + ", nombre=" + e.getNombre());
+
 			mostrarInfo("Espectaculo guardado correctamente");
 			limpiarFormulario();
 			cargarTablaEspectaculos();
@@ -267,7 +277,13 @@ public class EspectaculoController implements Initializable {
 		}
 
 		try {
+
+			// Resgistro del log
+			logService.registrar(sesionService.getUsuarioActual().getUsername(), TipoOperacion.BORRADO,
+					"Espectáculo eliminado: id=" + seleccionado.getId() + ", nombre=" + seleccionado.getNombre());
+
 			espectaculoService.eliminar(seleccionado.getId());
+			
 			mostrarInfo("Eliminado correctamente");
 			cargarTablaEspectaculos();
 			limpiarFormulario();

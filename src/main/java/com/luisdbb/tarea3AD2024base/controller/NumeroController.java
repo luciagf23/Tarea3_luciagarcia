@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import com.luisdbb.tarea3AD2024base.config.StageManager;
+import com.luisdbb.tarea3AD2024base.log.LogOperacionService;
+import com.luisdbb.tarea3AD2024base.log.TipoOperacion;
 import com.luisdbb.tarea3AD2024base.modelo.Artista;
 import com.luisdbb.tarea3AD2024base.modelo.Espectaculo;
 import com.luisdbb.tarea3AD2024base.modelo.Numero;
@@ -86,6 +88,9 @@ public class NumeroController implements Initializable {
 	private EspectaculoService espectaculoService;
 
 	private StageManager stageManager;
+
+	@Autowired
+	private LogOperacionService logService;
 
 	private Espectaculo espectaculoActual;
 	private Numero numeroEditando = null;
@@ -209,6 +214,11 @@ public class NumeroController implements Initializable {
 
 			n = numeroService.guardar(n);
 
+			// Registro del log
+			logService.registrar(sesionService.getUsuarioActual().getUsername(),
+					numeroEditando == null ? TipoOperacion.NUEVO : TipoOperacion.ACTUALIZACION,
+					"Número guardado: id=" + n.getId() + ", nombre=" + n.getNombre());
+
 			numeroEditando = n;
 
 			limpiar();
@@ -238,7 +248,13 @@ public class NumeroController implements Initializable {
 			mostrarError("Un espectáculo debe tener al menos 3 números");
 			return;
 		}
+
+		// Registro del log
+		logService.registrar(sesionService.getUsuarioActual().getUsername(), TipoOperacion.BORRADO,
+				"Número eliminado: id=" + numeroEditando.getId() + ", nombre=" + numeroEditando.getNombre());
+
 		numeroService.eliminar(numeroEditando.getId());
+
 		limpiar();
 		cargarNumeros();
 	}
