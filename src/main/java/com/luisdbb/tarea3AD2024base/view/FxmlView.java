@@ -25,75 +25,88 @@ public enum FxmlView {
 			return "/fxml/Login.fxml";
 		}
 	},
-	
-	  ESPECTACULOS {
-        @Override
-        public String getTitle() {
-            return "Gestión de Espectáculos";
-        }
 
-        @Override
-        public String getFxmlFile() {
-            return "/fxml/espectaculo.fxml";
-        }
-    },
+	ESPECTACULOS {
+		@Override
+		public String getTitle() {
+			return "Gestión de Espectáculos";
+		}
 
-    DETALLE_ESPECTACULO {
-        @Override
-        public String getTitle() {
-            return "Detalle del espectáculo";
-        }
+		@Override
+		public String getFxmlFile() {
+			return "/fxml/espectaculo.fxml";
+		}
+	},
 
-        @Override
-        public String getFxmlFile() {
-            return "/fxml/detalle_espectaculo.fxml";
-        }
-    },
-    
-    NUMEROS {
-        @Override
-        public String getTitle() {
-            return getStringFromResourceBundle("numeros.title");
-        }
+	DETALLE_ESPECTACULO {
+		@Override
+		public String getTitle() {
+			return "Detalle del espectáculo";
+		}
 
-        @Override
-        public String getFxmlFile() {
-            return "/fxml/numero.fxml";
-        }
-    },
-    
-    INVITADO{
-    	@Override
-        public String getTitle() {
-            return getStringFromResourceBundle("espectaculos.title");
-        }
+		@Override
+		public String getFxmlFile() {
+			return "/fxml/detalle_espectaculo.fxml";
+		}
+	},
 
-        @Override
-        public String getFxmlFile() {
-            return "/fxml/invitado.fxml";
-        }
+	NUMEROS {
+		@Override
+		public String getTitle() {
+			return getStringFromResourceBundle("numeros.title");
+		}
 
-    },
-    ARTISTA{
-    	
-    	@Override
-        public String getTitle() {
-            return getStringFromResourceBundle("artistas.title");
-        }
+		@Override
+		public String getFxmlFile() {
+			return "/fxml/numero.fxml";
+		}
+	},
 
-        @Override
-        public String getFxmlFile() {
-            return "/fxml/artista.fxml";
-        }
-    	
-    };
-	
+	INVITADO {
+		@Override
+		public String getTitle() {
+			return getStringFromResourceBundle("espectaculos.title");
+		}
+
+		@Override
+		public String getFxmlFile() {
+			return "/fxml/invitado.fxml";
+		}
+
+	},
+	ARTISTA {
+
+		@Override
+		public String getTitle() {
+			return getStringFromResourceBundle("artistas.title");
+		}
+
+		@Override
+		public String getFxmlFile() {
+			return "/fxml/fichaArtista.fxml";
+		}
+
+	},
+
+	FICHAARTISTA {
+		@Override
+		public String getTitle() {
+			return getStringFromResourceBundle("artista_detalle.title");
+		}
+
+		@Override
+		public String getFxmlFile() {
+			return "/fxml/fichaArtista.fxml";
+		}
+
+	};
 
 	public abstract String getTitle();
-{
 
+	{
 
-}
+	}
+
 	public abstract String getFxmlFile();
 
 	String getStringFromResourceBundle(String key) {

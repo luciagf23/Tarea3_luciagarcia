@@ -76,7 +76,7 @@
 					</children>
 				</HBox>
 
-				
+
 				<!-- Campos Artista -->
 				<VBox fx:id="camposArtista" visible="false" managed="false"
 					spacing="5.0">
@@ -145,6 +145,7 @@
 						<Button fx:id="gestionEspectaculos"
 							onAction="#abrirEspectaculos" prefHeight="30.0" prefWidth="100.0"
 							text="Espectaculos" />
+
 					</children>
 				</HBox>
 

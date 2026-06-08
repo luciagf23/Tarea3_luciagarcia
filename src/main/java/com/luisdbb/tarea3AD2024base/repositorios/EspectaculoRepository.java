@@ -29,4 +29,6 @@ public interface EspectaculoRepository
     	       """)
     	Espectaculo findByIdWithNumerosAndArtistas(@Param("id") Long id);
 
+    boolean existsByNombreAndFechaInicioAndIdNot(String nombre, LocalDate fechaInicio, Long id);
+
 }

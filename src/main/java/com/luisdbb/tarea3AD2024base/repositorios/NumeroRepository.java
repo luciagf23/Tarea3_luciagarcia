@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.luisdbb.tarea3AD2024base.modelo.Artista;
 import com.luisdbb.tarea3AD2024base.modelo.Espectaculo;
 import com.luisdbb.tarea3AD2024base.modelo.Numero;
 
@@ -47,4 +48,6 @@ public interface NumeroRepository extends JpaRepository<Numero, Long> {
 	long countByEspectaculoId(Long espectaculoId);
 	
 	List<Numero> findByArtistasId(Long artistaId);
+	
+	List<Numero> findByArtistasContains(Artista artista);
 }

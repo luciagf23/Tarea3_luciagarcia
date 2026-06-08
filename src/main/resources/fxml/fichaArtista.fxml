@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.luisdbb.tarea3AD2024base.controller.FichaArtistaController">
+
+    <center>
+        <VBox spacing="10" alignment="TOP_LEFT">
+
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <Label text="Ficha del Artista"
+                   style="-fx-font-size:20px; -fx-font-weight:bold;" />
+
+            <Label fx:id="lblNombre"/>
+            <Label fx:id="lblEmail"/>
+            <Label fx:id="lblNacionalidad"/>
+            <Label fx:id="lblApodo"/>
+            <Label fx:id="lblEspecialidades"/>
+
+            <Label text="Números donde participa:"
+                   style="-fx-font-weight:bold;" />
+
+            <ListView fx:id="listaNumeros"
+                      prefHeight="150"/>
+
+            <Label text="Espectáculos donde participa:"
+                   style="-fx-font-weight:bold;" />
+
+            <ListView fx:id="listaEspectaculos"
+                      prefHeight="150"/>
+
+        </VBox>
+    </center>
+
+</BorderPane>

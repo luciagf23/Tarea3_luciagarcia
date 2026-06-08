@@ -20,12 +20,12 @@ public class EspectaculoService {
 
 	public Espectaculo guardar(Espectaculo espectaculo) {
 
-		validarNombreUnico(espectaculo);
-		validarNombreYFecha(espectaculo);
+		validarNombreYFechaUnicos(espectaculo);
+		validarEspectaculo(espectaculo);
 		validarFechas(espectaculo);
 		validarDuracionMaxima(espectaculo);
 		validarCoordinador(espectaculo);
-		validarEspectaculo(espectaculo);
+		
 
 		return espectaculoRepository.save(espectaculo);
 	}
@@ -35,16 +35,16 @@ public class EspectaculoService {
 	}
 
 	// Validaciones
-	private void validarNombreUnico(Espectaculo e) {
+	private void validarNombreYFechaUnicos(Espectaculo e) {
 
-		// Si es edicion
-		if (e.getId() != null)
-			return;
+		Long id = (e.getId() == null) ? -1 : e.getId();
 
-		if (espectaculoRepository.existsByNombre(e.getNombre())) {
-			throw new RuntimeException("Ya existe un espectáculo con ese nombre");
+		boolean existeOtro = espectaculoRepository.existsByNombreAndFechaInicioAndIdNot(e.getNombre(),
+				e.getFechaInicio(), id);
+
+		if (existeOtro) {
+			throw new RuntimeException("Ya existe un espectáculo con ese nombre en esa fecha");
 		}
-
 	}
 
 	private void validarEspectaculo(Espectaculo e) {
@@ -57,12 +57,6 @@ public class EspectaculoService {
 			throw new RuntimeException("El nombre no puede superar los 25 caracteres");
 		}
 
-	}
-
-	private void validarNombreYFecha(Espectaculo e) {
-		if (espectaculoRepository.existsByNombreAndFechaInicio(e.getNombre(), e.getFechaInicio())) {
-			throw new RuntimeException("Ya existe un espectáculo con ese nombre en esa fecha");
-		}
 	}
 
 	private void validarFechas(Espectaculo e) {

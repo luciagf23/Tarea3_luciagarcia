@@ -1,10 +1,13 @@
 package com.luisdbb.tarea3AD2024base.services;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.luisdbb.tarea3AD2024base.modelo.Artista;
 import com.luisdbb.tarea3AD2024base.modelo.Numero;
 import com.luisdbb.tarea3AD2024base.repositorios.NumeroRepository;
 
@@ -71,6 +74,19 @@ public class NumeroService {
 					numero.getId())) {
 
 				throw new RuntimeException("Ya existe un número con ese orden en el espectáculo");
+			}
+		}
+	}
+
+	public void actualizarArtistas(Numero n, Set<Artista> seleccionados) {
+		Set<Long> idsSeleccionados = seleccionados.stream().map(Artista::getId).collect(Collectors.toSet());
+
+		n.getArtistas().removeIf(a -> !idsSeleccionados.contains(a.getId()));
+
+		for (Artista a : seleccionados) {
+			boolean yaExiste = n.getArtistas().stream().anyMatch(existing -> existing.getId().equals(a.getId()));
+			if (!yaExiste) {
+				n.getArtistas().add(a);
 			}
 		}
 	}

@@ -44,7 +44,6 @@ public class UserService {
 	}
 
 	public boolean authenticate(String username, String password) {
-	    // Admin hardcodeado según especificaciones
 	    if (username.equals("admin") && password.equals("admin")) {
 	        return true;
 	    }

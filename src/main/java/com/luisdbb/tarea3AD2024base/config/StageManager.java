@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.luisdbb.tarea3AD2024base.controller.ArtistaController;
+import com.luisdbb.tarea3AD2024base.controller.FichaArtistaController;
 import com.luisdbb.tarea3AD2024base.controller.EspectaculoController;
 import com.luisdbb.tarea3AD2024base.controller.LoginController;
 import com.luisdbb.tarea3AD2024base.controller.NumeroController;
@@ -115,6 +116,9 @@ public class StageManager {
 			}
 			if (controller instanceof ArtistaController c) {
 				c.setStageManager(this);
+			}
+			if (controller instanceof FichaArtistaController c) {
+			    c.setStageManager(this);
 			}
 
 			return root;

@@ -1,15 +1,14 @@
 package com.luisdbb.tarea3AD2024base.controller;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 
 import com.luisdbb.tarea3AD2024base.config.StageManager;
 import com.luisdbb.tarea3AD2024base.modelo.Credencial;
+import com.luisdbb.tarea3AD2024base.modelo.Rol;
 import com.luisdbb.tarea3AD2024base.services.CredencialService;
 import com.luisdbb.tarea3AD2024base.services.SesionService;
 import com.luisdbb.tarea3AD2024base.services.UserService;
@@ -62,12 +61,19 @@ public class LoginController implements Initializable {
 	private void login(ActionEvent event) {
 		try {
 			if (userService.authenticate(getUsername(), getPassword())) {
-				// Guardar usuario en sesión
-				if (!getUsername().equals("admin")) {
+
+				if (getUsername().equals("admin")) {
+					stageManager.switchScene(FxmlView.USER);
+				} else {
 					Credencial credencial = credencialService.findByUsername(getUsername());
 					sesionService.setUsuarioActual(credencial);
+
+					if (credencial.getRol() == Rol.ARTISTA) {
+						stageManager.switchScene(FxmlView.FICHAARTISTA);
+					} else if (credencial.getRol() == Rol.COORDINACION) {
+						stageManager.switchScene(FxmlView.ESPECTACULOS);
+					}
 				}
-				stageManager.switchScene(FxmlView.USER);
 			} else {
 				lblLogin.setText("Login Failed.");
 			}

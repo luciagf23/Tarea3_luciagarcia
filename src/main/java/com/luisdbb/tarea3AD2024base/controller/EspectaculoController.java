@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 
 import com.luisdbb.tarea3AD2024base.config.StageManager;
@@ -73,9 +72,12 @@ public class EspectaculoController implements Initializable {
 
 	@FXML
 	private Button btnNumeros;
-	
+
 	@FXML
 	private Button btnDetalles;
+
+	@FXML
+	private Button btnVolver;
 
 	@Autowired
 	private EspectaculoService espectaculoService;
@@ -160,6 +162,13 @@ public class EspectaculoController implements Initializable {
 	}
 
 	@FXML
+	private void volver(ActionEvent event) {
+
+		stageManager.switchScene(FxmlView.USER);
+
+	}
+
+	@FXML
 	private void limpiarFormulario() {
 		txtNombre.clear();
 		dateInicio.setValue(null);
@@ -206,7 +215,14 @@ public class EspectaculoController implements Initializable {
 
 	private Espectaculo construirEspectaculoDesdeFormulario() {
 
-		Espectaculo e = (espectaculoEditando != null) ? espectaculoEditando : new Espectaculo();
+		Espectaculo e;
+
+		// Si estamos editando, usar el objeto existente
+		if (espectaculoEditando != null) {
+			e = espectaculoEditando;
+		} else {
+			e = new Espectaculo();
+		}
 
 		e.setNombre(txtNombre.getText().trim());
 		e.setFechaInicio(dateInicio.getValue());
@@ -272,17 +288,15 @@ public class EspectaculoController implements Initializable {
 		cargarEspectaculoEnFormulario(seleccionado);
 	}
 
-	
 	@FXML
 	private void onVerDetalles(ActionEvent event) {
 		Espectaculo seleccionado = tablaEspectaculos.getSelectionModel().getSelectedItem();
-		
+
 		if (seleccionado == null) {
 			mostrarError("Seleccione un espectáculo");
 			return;
 		}
 		Espectaculo completo = espectaculoService.cargarEspectaculoCompleto(seleccionado.getId());
-		
 
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/detalle_espectaculo.fxml"));
@@ -313,7 +327,6 @@ public class EspectaculoController implements Initializable {
 		stageManager.switchScene(FxmlView.NUMEROS);
 	}
 
-	
 	@FXML
 	private void logout(ActionEvent event) throws IOException {
 		sesionService.cerrarSesion();

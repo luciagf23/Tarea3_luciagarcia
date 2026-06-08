@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,8 +35,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
-import java.util.stream.Collectors;
 
 @Controller
 public class NumeroController implements Initializable {
@@ -80,7 +81,7 @@ public class NumeroController implements Initializable {
 
 	@Autowired
 	private PersonaService personaService;
-	
+
 	@Autowired
 	private EspectaculoService espectaculoService;
 
@@ -116,11 +117,16 @@ public class NumeroController implements Initializable {
 		});
 	}
 
+	/*
+	 * private void cargarNumeros() { listaNumeros.clear();
+	 * listaNumeros.addAll(numeroService.findByEspectaculo(espectaculoActual.getId()
+	 * )); tablaNumeros.setItems(
+	 * FXCollections.observableArrayList(numeroService.findByEspectaculo(
+	 * espectaculoActual.getId()))); }
+	 */
 	private void cargarNumeros() {
-		listaNumeros.clear();
-		listaNumeros.addAll(numeroService.findByEspectaculo(espectaculoActual.getId()));
-		tablaNumeros.setItems(
-				FXCollections.observableArrayList(numeroService.findByEspectaculo(espectaculoActual.getId())));
+		listaNumeros.setAll(numeroService.findByEspectaculo(espectaculoActual.getId()));
+		tablaNumeros.setItems(listaNumeros);
 	}
 
 	private void cargarArtistas() {
@@ -149,19 +155,26 @@ public class NumeroController implements Initializable {
 
 		// Seleccionar artista del numero
 		listaArtistas.getSelectionModel().clearSelection();
-		for (Artista a : n.getArtistas()) {
-			listaArtistas.getSelectionModel().select(a);
+		for (Artista artistaNumero : n.getArtistas()) {
+			for (Artista artistaLista : listaArtistas.getItems()) {
+				if (artistaLista.getId().equals(artistaNumero.getId())) {
+					listaArtistas.getSelectionModel().select(artistaLista);
+					break;
+				}
+			}
 		}
+		// Forzar multiple despues de select
+		Platform.runLater(() -> {
+			listaArtistas.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		});
 	}
 
 	@FXML
 	private void guardarNumero(ActionEvent event) {
 		try {
 
-			Set<Artista> artistasSeleccionados = new HashSet<>(listaArtistas.getSelectionModel().getSelectedItems());
-			System.out.println("Artistas seleccionados: " + artistasSeleccionados.size());
-
 			validar();
+			Set<Artista> artistasSeleccionados = new HashSet<>(listaArtistas.getSelectionModel().getSelectedItems());
 
 			if (artistasSeleccionados.isEmpty()) {
 				throw new Exception("Debe asignar al menos un artista");
@@ -176,12 +189,26 @@ public class NumeroController implements Initializable {
 			n.setDuracion(duracion);
 			n.setEspectaculo(espectaculoActual);
 
+			if (n.getArtistas() == null) {
+				n.setArtistas(new HashSet<>());
+			}
+
+			// Comparar por ID para evitar reemplazos
+			Set<Long> idsSeleccionados = artistasSeleccionados.stream().map(Artista::getId).collect(Collectors.toSet());
+
+			// Quitar los desmarcados
+			n.getArtistas().removeIf(a -> !idsSeleccionados.contains(a.getId()));
+
+			// Añadir los nuevos
+			for (Artista a : artistasSeleccionados) {
+				boolean yaExiste = n.getArtistas().stream().anyMatch(existing -> existing.getId().equals(a.getId()));
+				if (!yaExiste) {
+					n.getArtistas().add(a);
+				}
+			}
+
 			n = numeroService.guardar(n);
 
-			n.getArtistas().clear();
-			n.getArtistas().addAll(artistasSeleccionados);
-
-			n = numeroService.guardar(n);
 			numeroEditando = n;
 
 			limpiar();
@@ -225,8 +252,6 @@ public class NumeroController implements Initializable {
 			mostrarError(e.getMessage());
 		}
 	}
-
-	
 
 	private double parseDuracion(String texto) {
 		// Acepta tanto punto como coma decimal

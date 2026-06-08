@@ -22,10 +22,12 @@ import com.luisdbb.tarea3AD2024base.modelo.Espectaculo;
 import com.luisdbb.tarea3AD2024base.modelo.Rol;
 import com.luisdbb.tarea3AD2024base.repositorios.ArtistaRepository;
 import com.luisdbb.tarea3AD2024base.repositorios.CredencialRepository;
+import com.luisdbb.tarea3AD2024base.repositorios.NumeroRepository;
 import com.luisdbb.tarea3AD2024base.repositorios.PersonaRepository;
 import com.luisdbb.tarea3AD2024base.modelo.Persona;
 import com.luisdbb.tarea3AD2024base.services.PersonaService;
 import com.luisdbb.tarea3AD2024base.services.RegistroService;
+import com.luisdbb.tarea3AD2024base.services.SesionService;
 import com.luisdbb.tarea3AD2024base.view.FxmlView;
 
 import javafx.application.Platform;
@@ -158,9 +160,15 @@ public class UserController implements Initializable {
 
 	@Autowired
 	private PersonaRepository personaRepository;
-	
+
 	@Autowired
 	private ArtistaRepository artistaRepository;
+
+	@Autowired
+	private SesionService sesionService;
+
+	@Autowired
+	private NumeroRepository numeroRepository;
 
 	private ObservableList<Persona> userList = FXCollections.observableArrayList();
 	private ObservableList<String> roles = FXCollections.observableArrayList("Artista", "Coordinacion");
@@ -208,17 +216,17 @@ public class UserController implements Initializable {
 			password.setText(credencial.getPassword());
 		}
 
-		if (persona instanceof Artista ) {
+		if (persona instanceof Artista) {
 
-			Artista a= artistaRepository.findById(persona.getId()).orElseThrow();
+			Artista a = artistaRepository.findById(persona.getId()).orElseThrow();
 			personaEditando = a;
-			    
+
 			chkAcrobacia.setSelected(false);
 			chkHumor.setSelected(false);
 			chkMagia.setSelected(false);
 			chkEquilibrismo.setSelected(false);
 			chkMalabarismo.setSelected(false);
-			
+
 			tipoPersona.setValue("Artista");
 
 			camposArtista.setVisible(true);
@@ -393,6 +401,7 @@ public class UserController implements Initializable {
 		}
 	}
 
+	
 	private void clearFields() {
 		personaEditando = null;
 		nombre.clear();
