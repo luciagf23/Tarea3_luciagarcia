@@ -147,7 +147,10 @@
 							text="Espectaculos" />
 
 					</children>
+
 				</HBox>
+				<Button fx:id="verLogs" text="Ver Logs" onAction="#abrirLogs"
+					prefHeight="30.0" prefWidth="120.0" />
 
 			</children>
 

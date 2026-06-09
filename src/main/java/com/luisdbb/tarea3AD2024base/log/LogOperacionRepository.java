@@ -10,24 +10,18 @@ import com.db4o.ObjectContainer;
 @Repository
 public class LogOperacionRepository {
 
-    @Autowired
-    private DB4OManager manager;
+	@Autowired
+	private DB4OManager manager;
 
-    public void guardar(LogOperacion log) {
-        ObjectContainer db = manager.open();
-        try {
-            db.store(log);
-        } finally {
-            db.close();
-        }
-    }
+	public void guardar(LogOperacion log) {
+		ObjectContainer db = manager.getDb();
+		db.store(log);
+		db.commit();
+	}
 
-    public List<LogOperacion> buscarPorEjemplo(LogOperacion ejemplo) {
-        ObjectContainer db = manager.open();
-        try {
-            return db.queryByExample(ejemplo);
-        } finally {
-            db.close();
-        }
-    }
+	public List<LogOperacion> buscarPorEjemplo(LogOperacion ejemplo) {
+		ObjectContainer db = manager.getDb();
+		return db.queryByExample(ejemplo);
+	}
+
 }

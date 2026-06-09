@@ -122,6 +122,9 @@ public class UserController implements Initializable {
 
 	@FXML
 	private Button btnDetalles;
+	
+	@FXML
+	private Button btnLogs;
 
 	@FXML
 	private TableView<Persona> userTable;
@@ -507,6 +510,12 @@ public class UserController implements Initializable {
 	private void abrirArtistas(ActionEvent event) {
 		stageManager.switchScene(FxmlView.ARTISTA);
 	}
+	
+	@FXML
+	private void abrirLogs(ActionEvent event) {
+	    stageManager.switchScene(FxmlView.LOGS);
+	}
+
 
 	private void saveAlert(Persona user) {
 

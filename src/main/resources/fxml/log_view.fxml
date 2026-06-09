@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+	xmlns:fx="http://javafx.com/fxml"
+	fx:controller="com.luisdbb.tarea3AD2024base.controller.LogController">
+
+	<children>
+
+		<ComboBox fx:id="comboUsuario" layoutX="30" layoutY="30"
+			prefWidth="200" />
+
+		<ComboBox fx:id="comboTipo" layoutX="250" layoutY="30"
+			prefWidth="150" />
+
+		<DatePicker fx:id="fechaInicio" layoutX="420" layoutY="30" />
+
+		<DatePicker fx:id="fechaFin" layoutX="580" layoutY="30" />
+
+		<Button text="Buscar" layoutX="750" layoutY="30"
+			onAction="#buscar" />
+
+		<TableView fx:id="tablaLogs" layoutX="30" layoutY="80"
+			prefWidth="800" prefHeight="400">
+			<columns>
+				<TableColumn fx:id="colFecha" text="Fecha"
+					prefWidth="150" />
+				<TableColumn fx:id="colUsuario" text="Usuario"
+					prefWidth="150" />
+				<TableColumn fx:id="colTipo" text="Tipo" prefWidth="150" />
+				<TableColumn fx:id="colResumen" text="Resumen"
+					prefWidth="350" />
+			</columns>
+		</TableView>
+
+	</children>
+
+</AnchorPane>

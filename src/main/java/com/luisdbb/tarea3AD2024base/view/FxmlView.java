@@ -99,6 +99,19 @@ public enum FxmlView {
 			return "/fxml/fichaArtista.fxml";
 		}
 
+	},
+	
+	LOGS{
+		
+		@Override
+		public String getTitle() {
+			return getStringFromResourceBundle("logs.title");
+		}
+
+		@Override
+		public String getFxmlFile() {
+			return "/fxml/log_view.fxml";
+		}
 	};
 
 	public abstract String getTitle();
